@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/theme";
 
@@ -11,12 +12,12 @@ export default function DocsHeader() {
     >
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <a href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <Logo width={26} height={26} />
             <span className="font-semibold text-sm tracking-tight" style={{ color: "var(--docs-heading)" }}>
               Aether
             </span>
-          </a>
+          </Link>
           <span style={{ color: "var(--docs-border)" }} className="mx-2">/</span>
           <span className="text-sm" style={{ color: "var(--muted)" }}>docs</span>
         </div>

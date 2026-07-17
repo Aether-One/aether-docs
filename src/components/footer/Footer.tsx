@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 
 export default function Footer() {
@@ -21,18 +22,18 @@ export default function Footer() {
 
           {/* Links */}
           <div className="flex flex-wrap gap-x-10 gap-y-3 text-[13px]">
-            <a href="/docs" className="text-muted hover:text-foreground transition-colors">
+            <Link href="/docs" className="text-muted hover:text-foreground transition-colors">
               Docs
-            </a>
-            <a href="/docs/getting-started" className="text-muted hover:text-foreground transition-colors">
+            </Link>
+            <Link href="/docs/getting-started" className="text-muted hover:text-foreground transition-colors">
               Getting Started
-            </a>
-            <a href="/docs/cli-reference" className="text-muted hover:text-foreground transition-colors">
+            </Link>
+            <Link href="/docs/cli-reference" className="text-muted hover:text-foreground transition-colors">
               CLI Reference
-            </a>
-            <a href="/docs/contributing" className="text-muted hover:text-foreground transition-colors">
+            </Link>
+            <Link href="/docs/contributing" className="text-muted hover:text-foreground transition-colors">
               Contributing
-            </a>
+            </Link>
             <a
               href="https://github.com/aether-one/aether"
               target="_blank"

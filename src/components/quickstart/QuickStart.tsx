@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function QuickStart() {
   return (
@@ -79,12 +80,12 @@ export default function QuickStart() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <a
+            <Link
               href="/docs/getting-started"
               className="text-sm text-muted hover:text-accent transition-colors duration-200"
             >
               Read the full guide →
-            </a>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

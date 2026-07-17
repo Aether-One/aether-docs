@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useTheme } from "@/components/theme";
 import Logo from "@/components/ui/Logo";
 
@@ -101,12 +102,12 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.95 }}
           >
-            <a
+            <Link
               href="/docs/getting-started"
               className="px-8 py-3.5 rounded-full bg-accent text-white font-semibold text-sm hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-[0_0_30px_var(--accent-muted)]"
             >
               Get Started
-            </a>
+            </Link>
             <a
               href="https://github.com/aether-one/aether"
               target="_blank"
