@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useTheme } from "@/components/theme";
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 interface LogoProps {
   width?: number;
@@ -11,25 +12,18 @@ interface LogoProps {
 
 export default function Logo({ width = 36, height = 36, className = "" }: LogoProps) {
   const { theme } = useTheme();
+  const src = theme === "dark"
+    ? `${BASE_PATH}/aether_logo_no_bg_dark.png`
+    : `${BASE_PATH}/aether_logo_no_bg.png`;
 
   return (
-    <>
-      <Image
-        src="/aether_logo_no_bg_dark.png"
-        alt="Aether"
-        width={width}
-        height={height}
-        className={`${className} ${theme === "dark" ? "block" : "hidden"}`}
-        priority
-      />
-      <Image
-        src="/aether_logo_no_bg.png"
-        alt="Aether"
-        width={width}
-        height={height}
-        className={`${className} ${theme === "dark" ? "hidden" : "block"}`}
-        priority
-      />
-    </>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt="Aether"
+      width={width}
+      height={height}
+      className={className}
+    />
   );
 }

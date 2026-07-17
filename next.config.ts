@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   pageExtensions: ["ts", "tsx", "md", "mdx"],
+  env: {
+    NEXT_PUBLIC_BASE_PATH: "/aether-docs",
+  },
 };
 
 const withMDX = createMDX({
