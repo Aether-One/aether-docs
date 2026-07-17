@@ -87,7 +87,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <motion.p
-            className="text-center text-white text-lg md:text-xl max-w-lg mx-auto mt-8 leading-relaxed font-normal backdrop-blur-md bg-background/40 rounded-2xl px-8 py-4 border border-border/50"
+            className="text-center text-foreground text-lg md:text-xl max-w-lg mx-auto mt-8 leading-relaxed font-normal backdrop-blur-md bg-background/40 rounded-2xl px-8 py-4 border border-border/50"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.75 }}
