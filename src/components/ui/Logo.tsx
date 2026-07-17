@@ -2,8 +2,6 @@
 
 import { useTheme } from "@/components/theme";
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
 interface LogoProps {
   width?: number;
   height?: number;
@@ -13,8 +11,8 @@ interface LogoProps {
 export default function Logo({ width = 36, height = 36, className = "" }: LogoProps) {
   const { theme } = useTheme();
   const src = theme === "dark"
-    ? `${BASE_PATH}/aether_logo_no_bg_dark.png`
-    : `${BASE_PATH}/aether_logo_no_bg.png`;
+    ? "/aether_logo_no_bg_dark.png"
+    : "/aether_logo_no_bg.png";
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
