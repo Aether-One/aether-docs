@@ -1,0 +1,61 @@
+# Installation
+
+Get Aether installed on your system in seconds.
+
+## Requirements
+
+- **OS**: macOS, Linux, or Windows (WSL)
+- **Shell**: bash, zsh, fish, or PowerShell
+- **Node.js**: 18+ (optional, for npx usage)
+
+## Install via Script
+
+The fastest way to install Aether:
+
+```bash
+curl -fsSL https://aether.sh/install | sh
+```
+
+This will:
+1. Detect your operating system and architecture
+2. Download the appropriate binary
+3. Add it to your PATH
+
+## Install via npm
+
+If you prefer npm:
+
+```bash
+npm install -g @aether-one/cli
+```
+
+## Install via Homebrew (macOS)
+
+```bash
+brew tap aether-one/tap
+brew install aether
+```
+
+## Verify Installation
+
+```bash
+aether --version
+# aether 0.1.0
+```
+
+## Your First Genesis
+
+Navigate to any project and initialize your workspace:
+
+```bash
+cd my-project
+aether genesis
+```
+
+Aether will scan your project structure, identify languages and frameworks, and create a context map that enables intelligent AI interactions.
+
+## Next Steps
+
+- [Quick Start](/docs/quick-start) — Walk through your first workflow
+- [CLI Reference](/docs/cli-reference) — See all available commands
+- [Providers](/docs/providers) — Configure your AI provider

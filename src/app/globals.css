@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+/* ===== DARK MODE (default) ===== */
+:root,
+.dark {
+  --background: #07070f;
+  --foreground: #f0f0f5;
+  --muted: #8b8b9e;
+  --border: rgba(255, 255, 255, 0.06);
+  --surface: #0e0e1a;
+  --surface-hover: #141424;
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-muted: rgba(139, 92, 246, 0.12);
+  --accent-secondary: #38bdf8;
+  --success: #34d399;
+  --code-bg: #0d0d18;
+  --code-text: #e2e8f0;
+  --code-keyword: #c4b5fd;
+  --code-string: #67e8f9;
+  --code-comment: #4b5563;
+
+  /* Docs specific */
+  --docs-bg: #07070f;
+  --docs-sidebar-bg: #0a0a14;
+  --docs-heading: #f0f0f5;
+  --docs-text: #b0b0c0;
+  --docs-link: #a78bfa;
+  --docs-link-hover: #c4b5fd;
+  --docs-code-bg: #12121e;
+  --docs-border: rgba(255, 255, 255, 0.06);
+  --docs-active: rgba(139, 92, 246, 0.1);
+  --docs-active-border: #8b5cf6;
+}
+
+/* ===== LIGHT MODE ===== */
+.light {
+  --background: #fafafa;
+  --foreground: #0f0f14;
+  --muted: #64648a;
+  --border: rgba(0, 0, 0, 0.08);
+  --surface: #ffffff;
+  --surface-hover: #f5f5f8;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-muted: rgba(124, 58, 237, 0.08);
+  --accent-secondary: #0ea5e9;
+  --success: #10b981;
+  --code-bg: #f8f8fc;
+  --code-text: #1e1e2e;
+  --code-keyword: #7c3aed;
+  --code-string: #0891b2;
+  --code-comment: #9ca3af;
+
+  /* Docs specific */
+  --docs-bg: #fafafa;
+  --docs-sidebar-bg: #f5f5f8;
+  --docs-heading: #0f0f14;
+  --docs-text: #4a4a5e;
+  --docs-link: #7c3aed;
+  --docs-link-hover: #6d28d9;
+  --docs-code-bg: #f0f0f8;
+  --docs-border: rgba(0, 0, 0, 0.06);
+  --docs-active: rgba(124, 58, 237, 0.06);
+  --docs-active-border: #7c3aed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-success: var(--success);
+
+  /* Keep cosmos colors for landing page dark areas */
+  --color-cosmos-900: #07070f;
+  --color-cosmos-800: #0e0e1a;
+  --color-cosmos-700: #141424;
+
+  --color-nebula-purple: #8b5cf6;
+  --color-nebula-blue: #3b82f6;
+  --color-nebula-cyan: #06b6d4;
+  --color-nebula-pink: #ec4899;
+
+  --color-star-white: #f0f0f5;
+  --color-star-dim: var(--muted);
+
+  --color-aurora-green: #34d399;
+  --color-aurora-teal: #14b8a6;
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 3s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  to { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.2);
+  border-radius: 3px;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+}
