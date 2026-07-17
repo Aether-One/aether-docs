@@ -65,7 +65,7 @@ export default function Hero() {
             <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-border bg-surface/50 backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse-slow" />
               <span className="text-xs text-muted font-mono tracking-widest uppercase">
-                v0.1 · genesis
+                v0.1.0 · genesis
               </span>
             </div>
           </motion.div>
