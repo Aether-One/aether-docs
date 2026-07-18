@@ -1,140 +1,37 @@
 # CLI Reference
 
-Complete reference for all Aether commands.
+## Usage
 
-## Global Flags
+```bash
+aether [flags]
+```
+
+Aether opens an interactive chat interface. No subcommands needed.
+
+## Flags
 
 | Flag | Description |
 |------|-------------|
-| `--help`, `-h` | Show help for any command |
-| `--version`, `-v` | Show version number |
-| `--verbose` | Enable verbose output |
-| `--quiet`, `-q` | Suppress non-essential output |
-| `--config` | Path to config file |
+| `--no-animation` | Skip startup animation |
+| `--version`, `-v` | Show version |
 
-## Commands
+## Interactive Commands
 
-### `aether genesis`
+Once inside the chat, use slash commands:
 
-Initialize a new AI workspace in the current directory.
+| Command | Description |
+|---------|-------------|
+| `/help` | Show available commands |
+| `/genesis` | Analyze and document your project |
+| `/exit` | Exit Aether |
+| `/clear` | Clear the screen |
 
-```bash
-aether genesis [options]
-```
+## Dropdown Navigation
 
-**Options:**
+Type `/` to see all commands. Use ↑↓ arrows to navigate, Enter to select.
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--provider` | AI provider to use | `openai` |
-| `--model` | Model to use | `gpt-4` |
-| `--exclude` | Glob patterns to exclude | `node_modules,dist,.git` |
-| `--depth` | Max directory depth to scan | `10` |
+## Coming Soon
 
-**Example:**
-
-```bash
-aether genesis --provider anthropic --model claude-3-opus
-```
-
----
-
-### `aether ask`
-
-Ask a question about your codebase.
-
-```bash
-aether ask <question> [options]
-```
-
-**Options:**
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--file`, `-f` | Focus on specific file(s) | — |
-| `--context`, `-c` | Additional context | — |
-| `--stream` | Stream the response | `true` |
-
-**Example:**
-
-```bash
-aether ask "what design patterns are used in this project?"
-aether ask "explain auth flow" -f src/auth/
-```
-
----
-
-### `aether context`
-
-Manage workspace context.
-
-```bash
-aether context <subcommand>
-```
-
-**Subcommands:**
-
-- `show` — Display current context map
-- `refresh` — Rebuild context from scratch
-- `add <path>` — Add files to context
-- `remove <path>` — Remove files from context
-
----
-
-### `aether config`
-
-Manage configuration.
-
-```bash
-aether config <subcommand>
-```
-
-**Subcommands:**
-
-- `show` — Display current config
-- `set <key> <value>` — Set a config value
-- `reset` — Reset to defaults
-
-**Example:**
-
-```bash
-aether config set provider anthropic
-aether config set model claude-3-sonnet
-```
-
----
-
-### `aether provider`
-
-Manage AI providers.
-
-```bash
-aether provider <subcommand>
-```
-
-**Subcommands:**
-
-- `list` — List available providers
-- `add <name>` — Add a new provider
-- `remove <name>` — Remove a provider
-- `test` — Test provider connectivity
-
-## Configuration File
-
-Aether uses a `.aether/config.toml` file in your project root:
-
-```toml
-[provider]
-name = "openai"
-model = "gpt-4"
-api_key_env = "OPENAI_API_KEY"
-
-[context]
-max_files = 1000
-max_depth = 10
-exclude = ["node_modules", "dist", ".git", "*.lock"]
-
-[output]
-stream = true
-color = true
-```
+- `/genesis` — Full AI-powered codebase analysis with provider support
+- `/ask` — Ask questions about your codebase
+- `/config` — Manage settings and providers

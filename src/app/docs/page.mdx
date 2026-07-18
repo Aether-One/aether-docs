@@ -1,6 +1,6 @@
 # Welcome to Aether
 
-Aether is an open-source CLI that transforms any codebase into an AI-native workspace. Think of it as Genesis — the birth of intelligence within your project, like a galaxy forming from stardust.
+Aether is an open-source interactive CLI that transforms any codebase into an AI-native workspace.
 
 ## Why Aether?
 
@@ -8,35 +8,40 @@ Modern development demands more than just a code editor. You need a tool that **
 
 Aether bridges the gap between your code and AI, giving you:
 
-- **Instant context** — No more copy-pasting files into chat windows
+- **Instant context** — Understands your codebase structure, patterns, and conventions
 - **Privacy first** — Your code stays on your machine
-- **Provider agnostic** — Use any AI model you prefer
-- **Zero config** — Just run `aether genesis` and you're ready
+- **Provider agnostic** — Supports OpenAI, Anthropic
 
 ## How It Works
 
 ```bash
 # Install
-curl -fsSL https://aether.sh/install | sh
+npm install -g aether
 
-# Initialize in any project
+# Run in any project
 cd your-project
-aether genesis
-
-# Start asking questions
-aether ask "explain the authentication flow"
+aether
 ```
+
+Aether opens an interactive chat. Use `/<COMMAND>`.
+
+## Current Status (v0.1)
+
+✅ Interactive chat interface  
+✅ Command system with dropdown autocomplete  
+✅ Startup animation  
+🚧 /genesis — AI-powered codebase analysis (in development)  
+🚧 /ask — Ask questions about your code (planned)
 
 ## Philosophy
 
 The naming is intentional. In the Aether universe:
 
-- **Genesis** — The birth of your AI workspace, like a galaxy forming
-- **Context** — The nebula of knowledge surrounding your code
-- **Providers** — The stars that power your queries (OpenAI, Anthropic, local models)
+- **Genesis** — The birth of your AI workspace
+- **Context** — The knowledge surrounding your code
+- **Providers** — The models that power analysis (OpenAI, Anthropic, Ollama)
 
 ## Next Steps
 
 - [Installation](/docs/getting-started) — Get Aether installed on your system
-- [Quick Start](/docs/quick-start) — Your first AI-assisted workflow
 - [CLI Reference](/docs/cli-reference) — All available commands
