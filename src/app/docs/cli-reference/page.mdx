@@ -1,4 +1,8 @@
+import Authors from "@/components/docs/Authors";
+
 # CLI Reference
+
+<Authors authors={[{ github: "fariazinhu" }]} />
 
 ## Usage
 
@@ -6,7 +10,7 @@
 aether [flags]
 ```
 
-Aether opens an interactive chat interface. No subcommands needed.
+Aether opens an interactive session. No subcommands needed — everything happens through slash commands once it's running.
 
 ## Flags
 
@@ -17,21 +21,111 @@ Aether opens an interactive chat interface. No subcommands needed.
 
 ## Interactive Commands
 
-Once inside the chat, use slash commands:
+Once inside the session, use slash commands (case-insensitive: `/CONFIG`, `/Genesis`, etc. all work):
 
 | Command | Description |
 |---------|-------------|
 | `/help` | Show available commands |
-| `/genesis` | Analyze and document your project |
-| `/exit` | Exit Aether |
+| `/config` | Configure your AI provider and model |
+| `/genesis` | Analyze the project and generate documentation |
+| `/sync` | Update existing docs incrementally — *in development* |
 | `/clear` | Clear the screen |
+| `/exit` | Exit Aether |
+
+Every command also accepts `help`, `--help`, or `-h` for detailed usage — e.g. `/config help`.
+
+## `/config`
+
+Configure the AI provider used by `/genesis`. Config is stored in `.aether/config.json` (gitignored — it holds your API key).
+
+```bash
+/config                     # show current config
+ /config gemini              # quick setup — free tier
+ /config openai
+ /config anthropic
+ /config openrouter          # one key, access to many models (incl. free ones)
+ /config set <key> <value>   # set a specific field
+```
+
+`set` keys: `provider`, `model`, `url` (or `baseurl`), `key` (or `apikey`).
+
+```bash
+/config set model gpt-4o
+ /config set key AIza...
+ /config set url https://openrouter.ai/api/v1
+```
+
+If you point `url` at a recognized host (OpenRouter, OpenAI, Anthropic, Gemini), `provider` is automatically re-synced to match — so the label never drifts from what you're actually calling.
+
+| Provider | Default model | Notes |
+|----------|---------------|-------|
+| `gemini` | `gemini-2.0-flash` | Free tier: 15 RPM, 1M tokens/day |
+| `openai` | `gpt-4o` | Paid — ~$0.01/10k tokens |
+| `anthropic` | `claude-sonnet-4-20250514` | Paid — ~$0.003/1k tokens |
+| `openrouter` | `openrouter/auto` | Proxy for many models with one key — override the model freely |
+
+## `/genesis`
+
+```bash
+/genesis              # analyze the current directory
+ /genesis <path>        # analyze a specific directory
+ /genesis --force       # regenerate even if .aether/docs already exists
+```
+
+What it does:
+
+1. Scans the **entire project** — configs, entry points, and every source file that fits the context budget (no arbitrary file-count cap).
+2. An AI planning pass decides which docs actually make sense for **this** project. Always generated: the human **guides** (`getting-started`, `onboarding`), the architecture set (`system-overview`, `folder-structure`, `tech-stack`), and `AI_CONTEXT.md`. Everything else (`contributing`, `coding-standards`, `modules`, `api`, `business`, `diagrams`, `glossary`) is only included with real evidence — a frontend or devops project won't get `api/endpoints.md` just because it's on the list.
+3. The AI can also propose a handful of custom docs beyond the fixed catalog when something project-specific deserves its own page (e.g. an unusual build pipeline).
+4. Docs are written to `.aether/docs/`, generated one at a time with retry + backoff on failures, plus a `docs/README.md` index that links everything.
+
+If `.aether/docs/` already exists, `/genesis` won't regenerate it by default — it'll point you to `/sync` instead. Use `--force` to fully regenerate anyway.
+
+### Two audiences, two contracts
+
+Genesis writes for both people and AI, and they don't get the same treatment:
+
+- **Human guides** (`guides/`) lead with the *why* and explain how the pieces connect. They read like onboarding, not an index. If your repo already has author-written context (a `README`, `CONTEXT.md`, …), they lean on it for intent — but you don't have to write anything; they're generated from the code either way.
+- **AI & architecture docs** (`AI_CONTEXT.md`, `architecture/`, etc.) stay strict and traceable — every claim maps to a file, so an assistant can trust them without hallucinating.
+
+Both share the same accuracy floor: nothing invented, and a planned feature is never described as already built.
+
+### Output structure
+
+```
+.aether/docs/
+├── README.md                (always — index of everything below)
+├── guides/
+│   ├── getting-started.md   (always — install & run, for humans)
+│   ├── onboarding.md        (always — mental model & the why)
+│   └── contributing.md      (if there's a real contribution process)
+├── architecture/
+│   ├── system-overview.md   (always)
+│   ├── folder-structure.md  (always)
+│   ├── tech-stack.md        (always)
+│   └── coding-standards.md  (if applicable)
+├── modules/overview.md      (if applicable)
+├── api/endpoints.md         (only with an actual API/CLI to document)
+├── business/rules.md        (if applicable)
+├── diagrams/system.md       (if applicable)
+├── AI_CONTEXT.md            (always)
+├── glossary.md              (if applicable)
+└── ...                      (+ custom docs the AI proposes for this project)
+```
+
+## `/sync`
+
+```bash
+/sync
+```
+
+🚧 **Still under development.** The idea: re-scan the project and refresh only the docs affected by what changed, instead of regenerating everything with `/genesis`. For now, running it just confirms it's not ready yet and points you to `/genesis --force`.
 
 ## Dropdown Navigation
 
-Type `/` to see all commands. Use ↑↓ arrows to navigate, Enter to select.
+Type `/` to see all commands. Use ↑↓ arrows to navigate, Enter to select, Tab to autocomplete.
 
 ## Coming Soon
 
-- `/genesis` — Full AI-powered codebase analysis with provider support
-- `/ask` — Ask questions about your codebase
-- `/config` — Manage settings and providers
+- `/sync` — Incremental doc updates without a full regeneration
+- Dedicated Anthropic provider (currently routed through the OpenAI-compatible client)

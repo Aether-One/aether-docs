@@ -1,6 +1,9 @@
 import PlatformInstall from "@/components/docs/PlatformInstall";
+import Authors from "@/components/docs/Authors";
 
 # Installation
+
+<Authors authors={[{ github: "fariazinhu" }]} />
 
 Aether is distributed as a **standalone binary** — no Node.js or any runtime required.
 Just download, make it executable, and run. The commands below always fetch the **latest release** automatically.
@@ -21,11 +24,36 @@ aether --version
 
 ## Quick Start
 
-Just run `aether` in any project directory:
+Run `aether` in any project directory:
 
 ```bash
 cd my-project
  aether
 ```
 
-An interactive chat opens. Type `/help` to see available commands.
+An interactive session opens. Type `/help` to see available commands.
+
+## Configure a Provider
+
+Before running `/genesis`, pick an AI provider with `/config`:
+
+```bash
+/config gemini      # free tier — good default
+ /config openrouter  # one key, access to many models (including free ones)
+ /config openai
+ /config anthropic
+```
+
+Then set your API key:
+
+```bash
+/config set key <your-api-key>
+```
+
+## Generate Documentation
+
+```bash
+/genesis
+```
+
+This scans your entire project, decides which docs make sense for it, and writes them to `.aether/docs/` — both **human guides** (getting-started, onboarding) and **AI/architecture** docs, tied together by a `README.md` index. See [CLI Reference](/docs/cli-reference) for flags and details.
