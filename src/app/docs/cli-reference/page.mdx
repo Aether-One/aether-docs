@@ -74,12 +74,28 @@ If you point `url` at a recognized host (OpenRouter, OpenAI, Anthropic, Gemini),
 
 What it does:
 
-1. Scans the **entire project** — configs, entry points, and every source file that fits the context budget (no arbitrary file-count cap).
+1. Scans the **entire project** — configs, entry points, and every source file that fits the context budget (no arbitrary file-count cap). The default budget is sized for large-context models, so a typical project goes in whole; anything it does have to leave out is listed explicitly, never dropped silently.
 2. An AI planning pass decides which docs actually make sense for **this** project. Always generated: the human **guides** (`getting-started`, `onboarding`), the architecture set (`system-overview`, `folder-structure`, `tech-stack`), and `AI_CONTEXT.md`. Everything else (`contributing`, `coding-standards`, `modules`, `api`, `business`, `diagrams`, `glossary`) is only included with real evidence — a frontend or devops project won't get `api/endpoints.md` just because it's on the list.
 3. The AI can also propose a handful of custom docs beyond the fixed catalog when something project-specific deserves its own page (e.g. an unusual build pipeline).
 4. Docs are written to `.aether/docs/`, generated one at a time with retry + backoff on failures, plus a `docs/README.md` index that links everything.
 
 If `.aether/docs/` already exists, `/genesis` won't regenerate it by default — it'll point you to `/sync` instead. Use `--force` to fully regenerate anyway.
+
+### Tuning the scan budget
+
+The defaults fit most projects into a large-context model without omitting anything. You can open them up further for a very large repo, or tighten them for a small local model, via environment variables:
+
+| Variable | Default | Controls |
+|----------|---------|----------|
+| `AETHER_MAX_TOTAL_CHARS` | `2000000` | Total characters of project content sent to the model |
+| `AETHER_MAX_FILE_SIZE` | `128000` | Per-file size cap in bytes — larger files are skipped |
+| `AETHER_MAX_FILES_WALKED` | `10000` | How many files the scanner will visit |
+| `AETHER_MAX_WALK_DEPTH` | `12` | Maximum directory nesting the scanner descends into |
+
+```bash
+# Example: open the budget up for a large monorepo
+AETHER_MAX_TOTAL_CHARS=4000000 aether /genesis
+```
 
 ### Two audiences, two contracts
 
