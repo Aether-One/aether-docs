@@ -1,58 +1,31 @@
+import PlatformInstall from "@/components/docs/PlatformInstall";
+
 # Installation
 
-## Requirements
+Aether is distributed as a **standalone binary** — no Node.js or any runtime required.
+Just download, make it executable, and run. The commands below always fetch the **latest release** automatically.
 
-- **Node.js** 20+
-- **OS**: Windows, macOS, or Linux
+## Install via CLI
 
-## Install via npm
+Choose your platform and run the commands in your terminal:
 
-```bash
-npm install -g aether
-```
+<PlatformInstall />
 
-## Or run directly (no install)
+---
 
-```bash
-npx aether
-```
-
-## Development (from source)
-
-```bash
-git clone https://github.com/aether-one/aether
- cd aether
- npm install
- npm run dev
-```
-
-## Verify
+## Verify Installation
 
 ```bash
 aether --version
 ```
 
-## Usage
+## Quick Start
 
 Just run `aether` in any project directory:
 
 ```bash
 cd my-project
-aether
+ aether
 ```
 
 An interactive chat opens. Type `/help` to see available commands.
-
-## Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `/help` | Show available commands |
-| `/genesis` | Analyze and document your project |
-| `/exit` | Exit Aether |
-| `/clear` | Clear the screen |
-
-## Features
-
-- **Tab completion** — Tab to accept suggestions
-- **Tips** — Helpful hints shown periodically

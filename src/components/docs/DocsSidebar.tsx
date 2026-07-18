@@ -15,6 +15,7 @@ const navigation = [
     title: "CLI Reference",
     links: [
       { title: "Commands", href: "/docs/cli-reference" },
+      { title: "Changelog", href: "/docs/changelog" },
     ],
   },
   {

@@ -1,6 +1,6 @@
 # Welcome to Aether
 
-Aether is an open-source interactive CLI that transforms any codebase into an AI-native workspace.
+Aether is an open-source CLI that transforms any codebase into an AI-native workspace — right from your terminal.
 
 ## Why Aether?
 
@@ -8,40 +8,48 @@ Modern development demands more than just a code editor. You need a tool that **
 
 Aether bridges the gap between your code and AI, giving you:
 
-- **Instant context** — Understands your codebase structure, patterns, and conventions
-- **Privacy first** — Your code stays on your machine
-- **Provider agnostic** — Supports OpenAI, Anthropic
+- **Instant context** — Analyzes your codebase structure, patterns, and conventions automatically
+- **Privacy first** — Your code never leaves your machine
+- **Provider agnostic** — Works with OpenAI, Anthropic, and Ollama (local models)
+- **Zero config** — Just run `aether` in any project directory
 
 ## How It Works
 
-```bash
-# Install
-npm install -g aether
+1. **Install** — Download the standalone binary or install via npm ([see Installation](/docs/getting-started))
+2. **Run** — Open a terminal in any project and type `aether`
+3. **Chat** — An interactive session starts with full context of your codebase
+4. **Use commands** — Type `/` to see available commands with autocomplete
 
-# Run in any project
-cd your-project
-aether
-```
+### What you can do
 
-Aether opens an interactive chat. Use `/<COMMAND>`.
-
-## Current Status (v0.1)
-
-✅ Interactive chat interface  
-✅ Command system with dropdown autocomplete  
-✅ Startup animation  
-🚧 /genesis — AI-powered codebase analysis (in development)  
-🚧 /ask — Ask questions about your code (planned)
+| Action | How |
+|--------|-----|
+| Start a session | `aether` |
+| Analyze & document your project | `/genesis` |
+| See all commands | `/help` |
+| Clear screen | `/clear` |
+| Exit | `/exit` |
 
 ## Philosophy
 
 The naming is intentional. In the Aether universe:
 
-- **Genesis** — The birth of your AI workspace
-- **Context** — The knowledge surrounding your code
-- **Providers** — The models that power analysis (OpenAI, Anthropic, Ollama)
+- **Genesis** — The birth of your AI workspace. Analyzes your entire codebase and generates documentation.
+- **Context** — The knowledge surrounding your code. Aether builds and maintains it for you.
+- **Providers** — The AI models that power analysis (OpenAI, Anthropic, Ollama).
+
+## Architecture
+
+Aether is built as a standalone binary — no Node.js, Python, or any runtime required. It ships as a single executable for Windows, macOS, and Linux.
+
+Under the hood:
+- Interactive terminal UI with streaming responses
+- Command system with dropdown autocomplete and tab completion
+- Modular provider system (swap AI backends without changing workflow)
+- Local-first: all data stays on your machine
 
 ## Next Steps
 
-- [Installation](/docs/getting-started) — Get Aether installed on your system
+- [Installation](/docs/getting-started) — Download & install Aether on your system
 - [CLI Reference](/docs/cli-reference) — All available commands
+- [Changelog](/docs/changelog) — Latest updates and releases
