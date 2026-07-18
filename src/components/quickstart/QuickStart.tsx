@@ -43,39 +43,77 @@ export default function QuickStart() {
               </div>
 
               <div className="p-6 font-mono text-[13px] leading-7 space-y-3">
-                {/* Aether header */}
-                <div className="space-y-0.5">
-                  <div>
-                    <span className="text-[#8b5cf6]">⚡</span>{" "}
-                    <span className="text-[#8b5cf6] font-bold">aether</span>
-                  </div>
-                  <div className="text-[#8888a8] pl-6">Your AI-native workspace companion.</div>
-                </div>
-
-                {/* Separator */}
-                <div className="border-t border-[#2a2a3a] my-2" />
-
-                {/* Help hint */}
-                <div className="text-[#6b6b8a] pl-2">
-                  Type <span className="text-[#c8c8e0]">/help</span> to get started.
-                </div>
-
                 {/* User command */}
-                <div className="pt-2">
+                <div>
                   <span className="text-[#8b5cf6]">→</span>{" "}
                   <span className="text-[#e8e8f0] font-semibold">/genesis</span>
                 </div>
 
-                {/* Aether response */}
+                {/* Aether genesis execution */}
                 <div className="space-y-1">
                   <div>
                     <span className="text-[#8b5cf6]">⚡</span>{" "}
-                    <span className="text-[#8888a8]">aether</span>
+                    <span className="text-[#8b5cf6] font-bold">aether genesis</span>
                   </div>
-                  <div className="pl-6 space-y-0.5">
-                    <div className="text-[#f59e0b]">Genesis is coming soon.</div>
-                    <div className="text-[#7a7a9a]">This will scan, analyze, and document your project.</div>
+                </div>
+
+                {/* Connection & scanning */}
+                <div className="pl-3 space-y-0.5">
+                  <div className="text-[#c8c8e0]">
+                    Connecting to <span className="text-[#8888a8]">openrouter</span> (tencent/hy3:free)...{" "}
+                    <span className="text-[#22c55e]">✓</span>
                   </div>
+                  <div className="text-[#c8c8e0]">
+                    Scanning project...{" "}
+                    <span className="text-[#22c55e]">✓</span>
+                  </div>
+                  <div className="text-[#c8c8e0]">Planning documentation...</div>
+                </div>
+
+                {/* Planner decided */}
+                <div className="pl-3 space-y-0.5">
+                  <div className="text-[#c8c8e0]">
+                    <span className="text-[#8b5cf6]">◇</span> Planner decided:
+                  </div>
+                  <div className="pl-5 text-[#8888a8] space-y-0">
+                    <div>• architecture/system-overview.md</div>
+                    <div>• architecture/folder-structure.md</div>
+                    <div>• architecture/tech-stack.md</div>
+                    <div>• AI_CONTEXT.md</div>
+                    <div>• modules/overview.md</div>
+                    <div>• docs/docs/theme-system.md <span className="text-[#6b6b8a]">(custom)</span></div>
+                    <div>• docs/docs/3d-galaxy-background.md <span className="text-[#6b6b8a]">(custom)</span></div>
+                  </div>
+                </div>
+
+                {/* Doc count */}
+                <div className="pl-3">
+                  <span className="text-[#22c55e]">✓</span>{" "}
+                  <span className="text-[#c8c8e0]">(7 docs)</span>
+                </div>
+
+                {/* Generating docs */}
+                <div className="pl-3 space-y-0.5">
+                  <div>
+                    <span className="text-[#8b5cf6]">⚡</span>{" "}
+                    <span className="text-[#c8c8e0]">generating docs</span>
+                  </div>
+                  <div className="pl-5 text-[#8888a8] space-y-0">
+                    <div><span className="text-[#22c55e]">✓</span> architecture/system-overview.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> architecture/folder-structure.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> architecture/tech-stack.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> modules/overview.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> AI_CONTEXT.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> docs/docs/theme-system.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> docs/docs/3d-galaxy-background.md</div>
+                  </div>
+                </div>
+
+                {/* Genesis complete */}
+                <div className="pt-1">
+                  <span className="text-[#22c55e]">✓</span>{" "}
+                  <span className="text-[#22c55e] font-semibold">Genesis complete in 170.1s</span>{" "}
+                  <span className="text-[#8888a8]">→ .aether/docs/</span>
                 </div>
 
                 {/* Cursor */}

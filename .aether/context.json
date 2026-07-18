@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-07-18T20:34:05.770Z",
+  "provider": "openrouter",
+  "model": "tencent/hy3:free",
+  "docs": [
+    "docs/README.md",
+    "docs/guides/getting-started.md",
+    "docs/guides/onboarding.md",
+    "docs/architecture/system-overview.md",
+    "docs/architecture/folder-structure.md",
+    "docs/architecture/tech-stack.md",
+    "docs/AI_CONTEXT.md",
+    "docs/docs/theme-system.md",
+    "docs/docs/3d-galaxy-background.md"
+  ]
+}
