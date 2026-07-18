@@ -79,6 +79,8 @@ What it does:
 3. The AI can also propose a handful of custom docs beyond the fixed catalog when something project-specific deserves its own page (e.g. an unusual build pipeline).
 4. Docs are written to `.aether/docs/`, generated one at a time with retry + backoff on failures, plus a `docs/README.md` index that links everything.
 
+Each doc is generated with only the code it actually needs (an `api` doc gets the route/command files, `tech-stack` gets the configs and directory tree, and so on) rather than the whole project. When that relevant slice still fits the model, it's sent as **real code**; when it doesn't, Aether falls back to divide-and-conquer — the slice is summarized chunk-by-chunk into factual notes and those notes are concatenated back into a compact context, so nothing is dropped even on a small model (it's just slower). Requests also stream under the hood with an *idle* timeout, so a slow model that keeps responding is never cut off mid-answer.
+
 If `.aether/docs/` already exists, `/genesis` won't regenerate it by default — it'll point you to `/sync` instead. Use `--force` to fully regenerate anyway.
 
 ### Tuning the scan budget
@@ -91,6 +93,7 @@ The defaults fit most projects into a large-context model without omitting anyth
 | `AETHER_MAX_FILE_SIZE` | `128000` | Per-file size cap in bytes — larger files are skipped |
 | `AETHER_MAX_FILES_WALKED` | `10000` | How many files the scanner will visit |
 | `AETHER_MAX_WALK_DEPTH` | `12` | Maximum directory nesting the scanner descends into |
+| `AETHER_DOC_CONTEXT_CHARS` | `48000` | Per-document context budget. Above this, the relevant code is distilled chunk-by-chunk instead of sent verbatim — raise it for a large-context model, lower it for a small local one |
 
 ```bash
 # Example: open the budget up for a large monorepo
