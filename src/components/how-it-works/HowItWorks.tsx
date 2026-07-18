@@ -6,17 +6,20 @@ const steps = [
   {
     number: "1",
     title: "Install",
-    code: "curl -fsSL https://aether.sh/install | sh",
+    code: "curl -Lo aether https://github.com/Aether-One/aether/releases/latest/download/aether-linux-x64",
+    description: "Download the standalone binary for your platform",
   },
   {
     number: "2",
-    title: "Genesis",
-    code: "aether genesis",
+    title: "Run",
+    code: "aether",
+    description: "Open a terminal in any project directory",
   },
   {
     number: "3",
-    title: "Ask",
-    code: "aether ask \"explain the auth flow\"",
+    title: "Chat",
+    code: "/genesis",
+    description: "An interactive session starts — use /<COMMAND>",
   },
 ];
 
@@ -32,9 +35,9 @@ export default function HowItWorks() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
-            Three commands.
+            One command.
             <br />
-            <span className="text-muted">That&apos;s it.</span>
+            <span className="text-muted">Full context.</span>
           </h2>
         </motion.div>
 
@@ -59,9 +62,16 @@ export default function HowItWorks() {
               </span>
 
               {/* Code */}
-              <div className="flex-1 font-mono text-sm text-muted group-hover:text-accent transition-colors duration-300">
-                <span className="text-accent/50 group-hover:text-accent transition-colors duration-300">$</span>{" "}
-                {step.code}
+              <div className="flex-1">
+                <div className="font-mono text-sm text-muted group-hover:text-accent transition-colors duration-300">
+                  <span className="text-accent/50 group-hover:text-accent transition-colors duration-300">
+                    {step.code.startsWith("/") ? "›" : "$"}
+                  </span>{" "}
+                  {step.code}
+                </div>
+                {step.description && (
+                  <p className="text-[12px] text-muted/50 mt-1">{step.description}</p>
+                )}
               </div>
             </motion.div>
           ))}

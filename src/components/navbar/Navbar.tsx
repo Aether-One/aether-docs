@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/theme";
-import Logo from "@/components/ui/Logo";
+import { ThemeToggle, useTheme } from "@/components/theme";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -28,15 +28,14 @@ export default function Navbar() {
     >
       <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <Logo
-            width={36}
-            height={36}
-            className="group-hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] transition-all duration-300"
+        <Link href="/" className="flex items-center group">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={theme === "dark" ? "/topbar_logo_dark.png" : "/topbar_logo_light.png"}
+            alt="Aether"
+            height={44}
+            className="h-11 w-auto group-hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] transition-all duration-300"
           />
-          <span className="text-foreground/90 font-semibold text-sm tracking-tight">
-            Aether
-          </span>
         </Link>
 
         {/* Nav links */}

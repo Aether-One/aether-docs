@@ -44,7 +44,7 @@ export default function Hero() {
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 1, scale: 1.5 }}
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="flex justify-center mb-8"
           >
@@ -130,36 +130,41 @@ export default function Hero() {
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-border to-transparent opacity-50" />
               <div className="absolute -inset-8 rounded-3xl bg-accent/5 blur-3xl" />
 
-              <div className="relative bg-surface/95 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative bg-[#0a0a12] backdrop-blur-md border border-[#1e1e2e] rounded-2xl overflow-hidden shadow-2xl">
                 {/* Chrome */}
-                <div className="flex items-center px-5 py-3 border-b border-border">
+                <div className="flex items-center px-5 py-3 border-b border-[#1e1e2e]">
                   <div className="flex gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                   </div>
-                  <span className="text-[11px] text-muted/50 font-mono ml-4">~/my-project</span>
+                  <span className="text-[11px] text-[#6b6b8a] font-mono ml-4">~/my-project</span>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 font-mono text-[13px] leading-7">
+                <div className="p-6 font-mono text-[13px] leading-7 space-y-3">
+                  {/* Aether header */}
+                  <div className="space-y-0.5">
+                    <div>
+                      <span className="text-[#8b5cf6]">⚡</span>{" "}
+                      <span className="text-[#8b5cf6] font-bold">aether</span>
+                    </div>
+                    <div className="text-[#8888a8] pl-6">Your AI-native workspace companion.</div>
+                  </div>
+
+                  {/* Separator */}
+                  <div className="border-t border-[#2a2a3a]" />
+
+                  {/* Help hint */}
+                  <div className="text-[#6b6b8a]">
+                    Type <span className="text-[#c8c8e0]">/help</span> to get started.
+                  </div>
+
+                  {/* User command */}
                   <div>
-                    <span className="text-accent">❯</span>{" "}
-                    <span className="text-foreground font-medium">aether genesis</span>
-                  </div>
-                  <div className="text-muted/60 pl-4 mt-1">
-                    scanning 847 files · mapping deps · indexing...
-                  </div>
-                  <div className="mt-1">
-                    <span className="text-success">✓</span>{" "}
-                    <span className="text-foreground/80">workspace ready</span>{" "}
-                    <span className="text-muted/40">· 1.2s</span>
-                  </div>
-                  <div className="mt-3">
-                    <span className="text-accent">❯</span>{" "}
-                    <span className="text-foreground font-medium">aether ask</span>{" "}
-                    <span className="text-accent-secondary">&quot;how does auth work?&quot;</span>
-                    <span className="inline-block w-[2px] h-4 bg-accent/60 ml-1 animate-pulse-slow align-middle" />
+                    <span className="text-[#8b5cf6]">→</span>{" "}
+                    <span className="text-[#e8e8f0] font-semibold">how does auth work?</span>
+                    <span className="inline-block w-[2px] h-4 bg-[#8b5cf6]/60 ml-1 animate-pulse-slow align-middle" />
                   </div>
                 </div>
               </div>

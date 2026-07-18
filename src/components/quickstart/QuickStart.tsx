@@ -32,42 +32,56 @@ export default function QuickStart() {
           <div className="relative">
             <div className="absolute -inset-px rounded-2xl bg-gradient-to-b from-border to-transparent" />
 
-            <div className="relative bg-surface border border-border rounded-2xl overflow-hidden">
-              <div className="flex items-center px-5 py-3 border-b border-border">
+            <div className="relative bg-[#0a0a12] border border-[#1e1e2e] rounded-2xl overflow-hidden">
+              {/* Window dots */}
+              <div className="flex items-center px-5 py-3 border-b border-[#1e1e2e]">
                 <div className="flex gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-foreground/10" />
-                  <div className="w-2 h-2 rounded-full bg-foreground/10" />
-                  <div className="w-2 h-2 rounded-full bg-foreground/10" />
+                  <div className="w-2 h-2 rounded-full bg-white/10" />
+                  <div className="w-2 h-2 rounded-full bg-white/10" />
+                  <div className="w-2 h-2 rounded-full bg-white/10" />
                 </div>
               </div>
 
-              <div className="p-6 font-mono text-[13px] leading-8 space-y-0.5">
-                <div>
-                  <span className="text-accent">❯</span>{" "}
-                  <span className="text-foreground">curl -fsSL https://aether.sh/install | sh</span>
+              <div className="p-6 font-mono text-[13px] leading-7 space-y-3">
+                {/* Aether header */}
+                <div className="space-y-0.5">
+                  <div>
+                    <span className="text-[#8b5cf6]">⚡</span>{" "}
+                    <span className="text-[#8b5cf6] font-bold">aether</span>
+                  </div>
+                  <div className="text-[#8888a8] pl-6">Your AI-native workspace companion.</div>
                 </div>
-                <div className="text-muted/60 pl-4">installed to ~/.local/bin/aether</div>
+
+                {/* Separator */}
+                <div className="border-t border-[#2a2a3a] my-2" />
+
+                {/* Help hint */}
+                <div className="text-[#6b6b8a] pl-2">
+                  Type <span className="text-[#c8c8e0]">/help</span> to get started.
+                </div>
+
+                {/* User command */}
                 <div className="pt-2">
-                  <span className="text-accent">❯</span>{" "}
-                  <span className="text-foreground">cd my-project</span>
+                  <span className="text-[#8b5cf6]">→</span>{" "}
+                  <span className="text-[#e8e8f0] font-semibold">/genesis</span>
                 </div>
+
+                {/* Aether response */}
+                <div className="space-y-1">
+                  <div>
+                    <span className="text-[#8b5cf6]">⚡</span>{" "}
+                    <span className="text-[#8888a8]">aether</span>
+                  </div>
+                  <div className="pl-6 space-y-0.5">
+                    <div className="text-[#f59e0b]">Genesis is coming soon.</div>
+                    <div className="text-[#7a7a9a]">This will scan, analyze, and document your project.</div>
+                  </div>
+                </div>
+
+                {/* Cursor */}
                 <div className="pt-2">
-                  <span className="text-accent">❯</span>{" "}
-                  <span className="text-foreground">aether genesis</span>
-                </div>
-                <div className="text-muted/60 pl-4">scanning · mapping · indexing</div>
-                <div className="pl-4">
-                  <span className="text-success">✓</span>{" "}
-                  <span className="text-foreground/80">workspace ready</span>
-                </div>
-                <div className="pt-2">
-                  <span className="text-accent">❯</span>{" "}
-                  <span className="text-foreground">aether ask</span>{" "}
-                  <span className="text-accent-secondary">&quot;explain the architecture&quot;</span>
-                </div>
-                <div className="text-muted pl-4 pt-1 leading-relaxed">
-                  This project uses a layered architecture with three main<br />
-                  modules: auth, api, and storage. The auth module handles...
+                  <span className="text-[#8b5cf6]">→</span>{" "}
+                  <span className="inline-block w-[2px] h-4 bg-[#e8e8f0]/70 animate-pulse" />
                 </div>
               </div>
             </div>
