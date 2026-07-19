@@ -57,3 +57,13 @@ Then set your API key:
 ```
 
 This scans your entire project, decides which docs make sense for it, and writes them to `.aether/docs/` — both **human guides** (getting-started, onboarding) and **AI/architecture** docs, tied together by a `README.md` index. See [CLI Reference](/docs/cli-reference) for flags and details.
+
+## Keep Docs Updated
+
+After making code changes, run:
+
+```bash
+/sync
+```
+
+This diffs the project against the last run and refreshes only the affected docs — no full regeneration needed.

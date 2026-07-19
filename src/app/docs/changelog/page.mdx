@@ -8,6 +8,43 @@ All notable updates to Aether are documented here. Each release includes new fea
 
 ---
 
+## v0.1.4 — Sync, Clean & Global Config
+
+> 🗓️ July 2026
+
+The big one: `/sync` is live, config moved to a global directory, and a new `/clean` command gives you full control over stored data.
+
+### ✨ Features
+
+- **`/sync` — incremental doc updates.** After a `/genesis` baseline exists, `/sync` diffs the project against the last snapshot, asks the AI which docs are affected, and patches only those — existing sections are updated in place, nothing is deleted, and new docs are added when the changes warrant them. No more `/genesis --force` after every code change
+- **`/clean` — manage global data.** Lists all configured projects with their provider, model, and cache size. Subcommands to clear caches (all or per-project), remove config, or nuke everything:
+  - `/clean` — show status
+  - `/clean cache` / `/clean cache <n>` — clear caches
+  - `/clean <n>` — remove a project entirely
+  - `/clean config` — delete API keys
+  - `/clean all` — remove `~/.aether/` completely
+- **Global config directory (`~/.aether/`)** — API keys and provider config now live in your home directory, never in the repo. One machine, many projects, each can use a different provider/model without touching version control. The first `/config` also sets a shared default that new projects inherit automatically
+- **Per-project cache** — distill cache (condensed source notes for large projects) lives in `~/.aether/cache/<project>/`, not in the repo
+- **Concurrent doc generation** — both `/genesis` and `/sync` now generate multiple docs in parallel (default: 4, configurable via `AETHER_GEN_CONCURRENCY`)
+- **Shared project context** — instead of building context per-doc, Aether now builds ONE complete context shared across all docs. If the project fits the budget, it's real code; if not, it's distilled once (not per-doc), so the expensive pass runs a single time
+
+### 🏗️ Under the hood
+
+- Snapshot moved from `.aether/context.json` to `.aether/settings/context.json` — keeps the project root clean (backwards-compatible: old location still found)
+- Project identity uses a stable hash (`<folder>-<sha1-of-path>`) so same-named projects in different paths never collide
+- Section-level patching: when `/sync` updates an existing doc, it rewrites only the affected sections instead of regenerating the whole file
+- File fingerprinting with content hashes for precise change detection
+- Git log integration: `/sync` includes recent commit messages in the AI's context so it understands *why* things changed, not just *what*
+- Retry with exponential backoff on provider errors (429, 5xx, timeouts)
+- Smart rate-limit handling: 429 errors now get up to 6 retries with 15s+ backoff (respects provider's suggested `retry-after` delay), so free-tier limits are survived automatically instead of failing
+
+### 🐛 Fixes
+
+- Config `provider` field no longer drifts when `baseUrl` is changed to a recognized host
+- Large projects that exceeded the context budget no longer lose files silently — they're distilled into factual notes instead
+
+---
+
 ## v0.1.3 — Let the Whole Project In
 
 > 🗓️ July 2026
@@ -103,10 +140,10 @@ Upcoming features planned for future releases:
 
 | Feature | Status |
 |---------|--------|
-| `/sync` — Incremental doc updates | In development |
 | `/ask` — Context-aware Q&A | Planned |
 | Dedicated Anthropic provider (own API format, not OpenAI-compatible) | Planned |
-| Project-level memory & context | Planned |
+| MCP Server — Expose knowledge to Claude, Cursor, Gemini | Planned |
+| VS Code Extension | Exploring |
 | Plugin system | Exploring |
 
 ---

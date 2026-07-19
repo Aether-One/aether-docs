@@ -31,6 +31,8 @@ Aether bridges the gap between your code and AI, giving you:
 | Start a session | `aether` |
 | Configure your AI provider | `/config` |
 | Analyze & document your project | `/genesis` |
+| Update docs after code changes | `/sync` |
+| Manage global data & caches | `/clean` |
 | See all commands | `/help` |
 | Clear screen | `/clear` |
 | Exit | `/exit` |
@@ -51,7 +53,8 @@ Under the hood:
 - Interactive terminal UI with dropdown autocomplete and tab completion
 - Full-project context scanning — no arbitrary file-count cap, so genesis sees the whole codebase
 - Modular provider system (swap AI backends without changing workflow)
-- Local-first: all data stays on your machine, config and generated docs live in `.aether/`
+- Global config (`~/.aether/`) — API keys and caches stay out of version control
+- Local-first: all data stays on your machine, generated docs live in `.aether/docs/`
 
 ## Next Steps
 
