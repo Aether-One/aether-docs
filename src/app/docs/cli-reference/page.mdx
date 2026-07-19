@@ -28,7 +28,8 @@ Once inside the session, use slash commands (case-insensitive: `/CONFIG`, `/Gene
 | `/help` | Show available commands |
 | `/config` | Configure your AI provider and model |
 | `/genesis` | Analyze the project and generate documentation |
-| `/sync` | Update existing docs incrementally — *in development* |
+| `/sync` | Update existing docs incrementally |
+| `/clean` | Manage global data (caches, configs, projects) |
 | `/clear` | Clear the screen |
 | `/exit` | Exit Aether |
 
@@ -36,7 +37,9 @@ Every command also accepts `help`, `--help`, or `-h` for detailed usage — e.g.
 
 ## `/config`
 
-Configure the AI provider used by `/genesis`. Config is stored in `.aether/config.json` (gitignored — it holds your API key).
+Configure the AI provider used by `/genesis`. Config is stored globally in `~/.aether/config.json` — never in the repo, so your API key stays out of version control.
+
+Each project keeps its own provider/model in that file, with a shared default the rest inherit — so one machine can drive many projects. Prefer not to store the key at all? Set `AETHER_API_KEY` in your environment and it overrides whatever's in the config file — handy for CI or shared machines.
 
 ```bash
 /config                     # show current config
@@ -77,9 +80,9 @@ What it does:
 1. Scans the **entire project** — configs, entry points, and every source file that fits the context budget (no arbitrary file-count cap). The default budget is sized for large-context models, so a typical project goes in whole; anything it does have to leave out is listed explicitly, never dropped silently.
 2. An AI planning pass decides which docs actually make sense for **this** project. Always generated: the human **guides** (`getting-started`, `onboarding`), the architecture set (`system-overview`, `folder-structure`, `tech-stack`), and `AI_CONTEXT.md`. Everything else (`contributing`, `coding-standards`, `modules`, `api`, `business`, `diagrams`, `glossary`) is only included with real evidence — a frontend or devops project won't get `api/endpoints.md` just because it's on the list.
 3. The AI can also propose a handful of custom docs beyond the fixed catalog when something project-specific deserves its own page (e.g. an unusual build pipeline).
-4. Docs are written to `.aether/docs/`, generated one at a time with retry + backoff on failures, plus a `docs/README.md` index that links everything.
+4. Docs are written to `.aether/docs/`, generated concurrently with retry + backoff on failures, plus a `docs/README.md` index that links everything.
 
-Each doc is generated with only the code it actually needs (an `api` doc gets the route/command files, `tech-stack` gets the configs and directory tree, and so on) rather than the whole project. When that relevant slice still fits the model, it's sent as **real code**; when it doesn't, Aether falls back to divide-and-conquer — the slice is summarized chunk-by-chunk into factual notes and those notes are concatenated back into a compact context, so nothing is dropped even on a small model (it's just slower). Requests also stream under the hood with an *idle* timeout, so a slow model that keeps responding is never cut off mid-answer.
+Each doc is generated from a **single shared project context** built once before generation starts. If the whole project fits the model's budget, it's sent as **real code**; when it doesn't, Aether distills the entire project once into factual notes and reuses them for every doc — so nothing is dropped, the expensive pass runs a single time, and all docs stay consistent with each other. Requests stream under the hood with an *idle* timeout, so a slow model that keeps responding is never cut off mid-answer.
 
 If `.aether/docs/` already exists, `/genesis` won't regenerate it by default — it'll point you to `/sync` instead. Use `--force` to fully regenerate anyway.
 
@@ -94,11 +97,6 @@ The defaults fit most projects into a large-context model without omitting anyth
 | `AETHER_MAX_FILES_WALKED` | `10000` | How many files the scanner will visit |
 | `AETHER_MAX_WALK_DEPTH` | `12` | Maximum directory nesting the scanner descends into |
 | `AETHER_DOC_CONTEXT_CHARS` | `48000` | Per-document context budget. Above this, the relevant code is distilled chunk-by-chunk instead of sent verbatim — raise it for a large-context model, lower it for a small local one |
-
-```bash
-# Example: open the budget up for a large monorepo
-AETHER_MAX_TOTAL_CHARS=4000000 aether /genesis
-```
 
 ### Two audiences, two contracts
 
@@ -135,10 +133,68 @@ Both share the same accuracy floor: nothing invented, and a planned feature is n
 ## `/sync`
 
 ```bash
-/sync
+/sync              # sync the current directory
+ /sync <path>       # sync a specific directory
 ```
 
-🚧 **Still under development.** The idea: re-scan the project and refresh only the docs affected by what changed, instead of regenerating everything with `/genesis`. For now, running it just confirms it's not ready yet and points you to `/genesis --force`.
+Refresh docs after the project changed — without regenerating everything.
+
+How it works:
+
+1. Diffs the project against the last `/genesis` snapshot (stored in `.aether/settings/context.json`)
+2. Asks the AI which docs are affected by what changed
+3. Refreshes only those docs in place — existing sections are patched, nothing is deleted
+4. Adds new docs if the changes warrant them (e.g. you added an API layer that didn't exist before)
+
+If no snapshot exists yet, `/sync` will point you to `/genesis` first.
+
+### Concurrent generation
+
+Both `/genesis` and `/sync` generate multiple docs in parallel. The default concurrency is 4; override with:
+
+| Variable | Default | Controls |
+|----------|---------|----------|
+| `AETHER_GEN_CONCURRENCY` | `4` | How many docs are generated simultaneously |
+| `AETHER_DISTILL_CONCURRENCY` | `4` | How many files are distilled concurrently (large projects) |
+
+## `/clean`
+
+```bash
+/clean              # list all projects and global status
+ /clean cache        # remove all cached data (keep configs)
+ /clean cache <n>    # remove cache for project #n from the list
+ /clean <n>          # remove project #n entirely (config + cache)
+ /clean config       # delete ~/.aether/config.json (API keys)
+ /clean all          # delete everything in ~/.aether/
+```
+
+Manage global data stored in `~/.aether/`. Use `/clean` with no arguments to see what's stored — all configured projects, their cache sizes, and provider info.
+
+### What lives in `~/.aether/`
+
+| Path | Contents |
+|------|----------|
+| `config.json` | API keys, provider/model per project + shared default |
+| `cache/<project>/` | Distill cache (condensed source notes for large projects) |
+
+### Project storage in the repo
+
+| Path | Contents |
+|------|----------|
+| `.aether/docs/` | Generated knowledge base (safe to commit) |
+| `.aether/settings/context.json` | Snapshot for `/sync` — **do not delete** or sync loses its baseline |
+
+## Error Handling & Retries
+
+All API calls retry automatically with exponential backoff:
+
+| Error type | Retries | Backoff | Behavior |
+|------------|---------|---------|----------|
+| Rate limit (429) | Up to 6 | 15s, 30s, 60s, 120s... | Respects provider's `retry-after` hint if present |
+| Server errors (5xx) | Up to 3 | 2s, 4s, 8s | Standard exponential backoff |
+| Timeouts | Up to 3 | 2s, 4s, 8s | Idle timeout (no data for 2 min), not total time |
+
+Rate limits from free tiers (Gemini's 15 RPM, for example) are handled automatically — the CLI waits and retries instead of failing. During generation, each step shows its retry status inline.
 
 ## Dropdown Navigation
 
@@ -146,5 +202,6 @@ Type `/` to see all commands. Use ↑↓ arrows to navigate, Enter to select, Ta
 
 ## Coming Soon
 
-- `/sync` — Incremental doc updates without a full regeneration
+- `/ask` — Context-aware Q&A about your codebase
 - Dedicated Anthropic provider (currently routed through the OpenAI-compatible client)
+- MCP Server — Expose knowledge base to Claude, Cursor, Gemini
