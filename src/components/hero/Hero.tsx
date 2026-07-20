@@ -38,7 +38,7 @@ export default function Hero() {
 
       <motion.div
         style={{ y, opacity }}
-        className="relative z-10 px-4 max-w-6xl mx-auto"
+        className="relative z-10 px-4 max-w-6xl mx-auto pt-20 sm:pt-24 md:pt-0"
       >
         <div className="relative">
           {/* Logo */}
@@ -51,7 +51,7 @@ export default function Hero() {
             <Logo
               width={140}
               height={140}
-              className="w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[140px] md:h-[140px] drop-shadow-[0_0_60px_rgba(139,92,246,0.5)]"
+              className="w-[60px] h-[60px] sm:w-[90px] sm:h-[90px] md:w-[140px] md:h-[140px] drop-shadow-[0_0_60px_rgba(139,92,246,0.5)]"
             />
           </motion.div>
 
