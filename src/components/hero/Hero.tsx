@@ -44,14 +44,14 @@ export default function Hero() {
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1.5 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="flex justify-center mb-8"
+            className="flex justify-center mb-6 sm:mb-8"
           >
             <Logo
               width={140}
               height={140}
-              className="drop-shadow-[0_0_60px_rgba(139,92,246,0.5)]"
+              className="w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[140px] md:h-[140px] drop-shadow-[0_0_60px_rgba(139,92,246,0.5)]"
             />
           </motion.div>
 
@@ -60,11 +60,11 @@ export default function Hero() {
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="flex justify-center mb-10"
+            className="flex justify-center mb-6 sm:mb-10"
           >
-            <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-border bg-surface/50 backdrop-blur-sm">
+            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border bg-surface/50 backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse-slow" />
-              <span className="text-xs text-muted font-mono tracking-widest uppercase">
+              <span className="text-[10px] sm:text-xs text-muted font-mono tracking-widest uppercase">
                 v0.1 · genesis
               </span>
             </div>
@@ -77,7 +77,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            <h1 className="text-[clamp(3rem,9vw,7rem)] font-bold leading-[0.85] tracking-[-0.04em]">
+            <h1 className="text-[clamp(2rem,8vw,7rem)] font-bold leading-[0.9] tracking-[-0.04em]">
               <span className="block text-foreground drop-shadow-[0_2px_20px_var(--accent-muted)]">Make your code</span>
               <span className="block mt-1 bg-gradient-to-r from-[#8b5cf6] via-[#3b82f6] to-[#34d399] bg-clip-text text-transparent bg-[length:200%] animate-shimmer">
                 think.
@@ -87,7 +87,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <motion.p
-            className="text-center text-foreground text-lg md:text-xl max-w-lg mx-auto mt-8 leading-relaxed font-normal backdrop-blur-md bg-background/40 rounded-2xl px-8 py-4 border border-border/50"
+            className="text-center text-foreground text-base sm:text-lg md:text-xl max-w-lg mx-auto mt-6 sm:mt-8 leading-relaxed font-normal backdrop-blur-md bg-background/40 rounded-2xl px-5 sm:px-8 py-3 sm:py-4 border border-border/50"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.75 }}
@@ -121,7 +121,7 @@ export default function Hero() {
 
           {/* Terminal */}
           <motion.div
-            className="mt-20 max-w-xl mx-auto"
+            className="mt-12 sm:mt-20 max-w-xl mx-auto"
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -142,7 +142,7 @@ export default function Hero() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 font-mono text-[13px] leading-7 space-y-3">
+                <div className="p-4 sm:p-6 font-mono text-[11px] sm:text-[13px] leading-6 sm:leading-7 space-y-3">
                   {/* Aether header */}
                   <div className="space-y-0.5">
                     <div>
