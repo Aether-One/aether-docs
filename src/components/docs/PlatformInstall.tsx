@@ -102,13 +102,16 @@ aether --version`,
     },
     {
       icon: <MacIcon />,
-      name: "macOS",
+      name: "macOS (Apple Silicon)",
       color: "#555555",
       script: `# Download
-curl -Lo aether https://github.com/Aether-One/aether/releases/latest/download/aether-macos-x64
+curl -Lo aether https://github.com/Aether-One/aether/releases/latest/download/aether-macos-arm64
 
 # Make it executable
 chmod +x aether
+
+# Remove quarantine flag (prevents Gatekeeper from blocking the binary)
+xattr -d com.apple.quarantine aether 2>/dev/null || true
 
 # Move to PATH
 sudo mv aether /usr/local/bin/aether

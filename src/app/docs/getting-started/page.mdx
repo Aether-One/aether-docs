@@ -1,4 +1,3 @@
-import PlatformInstall from "@/components/docs/PlatformInstall";
 import Authors from "@/components/docs/Authors";
 
 # Installation
@@ -6,13 +5,19 @@ import Authors from "@/components/docs/Authors";
 <Authors authors={[{ github: "fariazinhu" }]} />
 
 Aether is distributed as a **standalone binary** — no Node.js or any runtime required.
-Just download, make it executable, and run. The commands below always fetch the **latest release** automatically.
+The install script handles architecture detection and macOS Gatekeeper automatically.
 
-## Install via CLI
+## macOS / Linux
 
-Choose your platform and run the commands in your terminal:
+```bash
+curl -fsSL https://raw.githubusercontent.com/aether-one/aether/main/scripts/install.sh | sh
+```
 
-<PlatformInstall />
+## Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/aether-one/aether/main/scripts/install.ps1 | iex
+```
 
 ---
 
