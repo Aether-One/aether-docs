@@ -1,0 +1,22 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.11 — Clean Code, On Demand
+
+<Authors authors={[{ github: "viniciushgiovanini" }]} />
+
+> 🗓️ July 2026
+
+Aether can now review your code for clean-code violations without touching it. `/cleancode` scans the project, writes a plain-language report, and leaves the actual editing to whichever AI assistant you point at the result.
+
+### ✨ Features
+
+- **New `/cleancode` command.** Run `/cleancode review` to scan the project for clean-code violations and write a report to `.aether/clean/report.md` — no code is rewritten by Aether itself
+- **Hybrid detection.** Free local heuristics flag suspect files first; only those files go through one batched AI pass for a sharper review. Clean files never touch the API
+- **Cost confirmation before the AI pass.** Same flow as `/genesis` and `/sync` — see the estimated tokens and cost, confirm or skip with `--yes`
+- **Selectable paradigms.** Review against `clean-code` (default), `solid`, `functional`, or `google-style` with `/cleancode paradigm <name>`
+- **Per-project ignore list.** `/cleancode ignore <pattern>` excludes matching files from future reviews
+
+### 🏗️ Under the hood
+
+- The `@` path picker now offers files as well as folders when typing `/cleancode review @` — every other command (including `/exclude`) still offers folders only
+- Nothing from `/cleancode` is persisted as JSON between runs — the markdown report is the single source of truth, regenerated fresh each time
