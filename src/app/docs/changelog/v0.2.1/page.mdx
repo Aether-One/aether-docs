@@ -1,0 +1,24 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.2.1 — Ask Your Docs
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+> 🗓️ July 2026
+
+Your `.aether/docs` stop being a folder you open and start being something you can talk to. The new `/ask` command answers questions about your project straight from its knowledge base — grounded in the docs, formatted for the terminal, and honest when the docs don't have the answer.
+
+### ✨ Features
+
+- **New `/ask` command.** Ask a plain question — `/ask How do I add a new command?` (no quotes needed) — and Aether answers from your `.aether/docs`, pointing at the relevant files and conventions. If the docs don't cover it, it says so instead of hallucinating
+- **Answers rendered for the terminal.** Responses are no longer dumped as raw Markdown. Headings, bullet lists, inline `code`, and fenced code blocks are styled with the Aether theme, so an answer reads cleanly in your shell
+
+### 🐛 Fixes
+
+- **Terminal no longer freezes after a cancellable command.** `/genesis`, `/sync`, `/prompt`, and `/ask` all install an `ESC`-to-cancel key watcher; on exit it could hand the terminal back in raw mode and paused — leaving it completely unresponsive, with even `Ctrl+C` dead. The watcher now always restores the terminal to a usable state (cooked mode, input flowing) so the next prompt — and `Ctrl+C` — work every time
+
+### 🏗️ Under the hood
+
+- **Shared terminal Markdown renderer** — a small `renderMarkdown` utility (`src/ui/markdown.ts`) converts a subset of Markdown to ANSI, reusable by any command that prints model output
+- **Grounded answer prompt** — `/ask` reuses the same anti-hallucination base prompt as doc generation, tuned to answer concisely and admit when the documentation doesn't cover the question
+- **Consistent command wiring** — `/ask` is registered alongside the other module commands in `src/cli/index.ts`, keeping a single, predictable place where commands are hooked up

@@ -1,0 +1,40 @@
+import Authors from "@/components/docs/Authors";
+
+# /ask
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+```bash
+/ask <question>    # no quotes needed
+```
+
+Ask a question about your project and get an answer grounded in its documentation. `/ask` reads your `.aether/docs` knowledge base and answers from it — using your configured AI provider — instead of guessing.
+
+## How it works
+
+1. Reads every `.md` under `.aether/docs/` into context (bounded by a character budget, so small and free models aren't overrun)
+2. Sends your question plus that documentation to the model
+3. Prints the answer in the terminal, rendered from Markdown — headings, bullet lists, inline `code`, and code blocks are styled instead of dumped raw
+
+## Grounded, not guessing
+
+`/ask` answers **only** from your documentation. If the docs don't cover the question, it says so plainly rather than inventing an answer — e.g. asking it something unrelated to the project will get you a clear "the docs don't cover this" instead of a hallucination.
+
+That means the quality of the answer tracks the quality of your docs: run [`/genesis`](/docs/cli-reference/genesis) to build them and [`/sync`](/docs/cli-reference/sync) to keep them current.
+
+## Example
+
+```bash
+/ask How do I add a new command?
+```
+
+Answers from your architecture and reference docs — pointing at the files and conventions involved (e.g. the command registry and where commands are wired up).
+
+## Requirements
+
+- Run [`/genesis`](/docs/cli-reference/genesis) first — `/ask` needs a `.aether/docs` knowledge base to answer from
+- A configured provider ([`/config`](/docs/cli-reference/config))
+
+## Cancel anytime
+
+Press `ESC` while it's working to cancel.

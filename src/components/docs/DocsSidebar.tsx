@@ -20,6 +20,7 @@ const navigation = [
       { title: "/genesis", href: "/docs/cli-reference/genesis" },
       { title: "/sync", href: "/docs/cli-reference/sync" },
       { title: "/prompt", href: "/docs/cli-reference/prompt" },
+      { title: "/ask", href: "/docs/cli-reference/ask" },
       { title: "/clean", href: "/docs/cli-reference/clean" },
       { title: "/exclude", href: "/docs/cli-reference/exclude" },
       { title: "/cleancode", href: "/docs/cli-reference/cleancode" },
@@ -29,6 +30,7 @@ const navigation = [
     title: "Changelog",
     links: [
       { title: "All Releases", href: "/docs/changelog" },
+      { title: "v0.2.1", href: "/docs/changelog/v0.2.1" },
       { title: "v0.2.0", href: "/docs/changelog/v0.2.0" },
       { title: "v0.1.11", href: "/docs/changelog/v0.1.11" },
       { title: "v0.1.10", href: "/docs/changelog/v0.1.10" },
