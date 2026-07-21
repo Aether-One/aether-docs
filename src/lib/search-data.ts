@@ -17,8 +17,10 @@ export const searchData: SearchItem[] = [
   { title: "/sync", description: "Update existing docs incrementally after code changes", href: "/docs/cli-reference/sync", category: "CLI Reference", keywords: ["sync", "update", "incremental", "diff", "refresh", "patch"] },
   { title: "/clean", description: "Manage global data, caches, and project configs", href: "/docs/cli-reference/clean", category: "CLI Reference", keywords: ["clean", "cache", "delete", "remove", "global", "config"] },
   { title: "/exclude", description: "Manage paths excluded from scans to reduce cost and noise", href: "/docs/cli-reference/exclude", category: "CLI Reference", keywords: ["exclude", "ignore", "path", "filter", "cost", "reduce"] },
+  { title: "/cleancode", description: "Scan the project for clean-code violations and write a report", href: "/docs/cli-reference/cleancode", category: "CLI Reference", keywords: ["cleancode", "clean code", "review", "lint", "solid", "heuristics", "paradigm"] },
   // Changelog
   { title: "Changelog", description: "All notable updates to Aether", href: "/docs/changelog", category: "Changelog", keywords: ["changelog", "releases", "updates", "versions"] },
+  { title: "v0.1.11", description: "Clean Code, On Demand — new /cleancode command with hybrid heuristic + AI review", href: "/docs/changelog/v0.1.11", category: "Changelog", keywords: ["0.1.11", "cleancode", "clean code", "review", "hybrid"] },
   { title: "v0.1.10", description: "Never Leave a Doc Behind — resilient generation, retries empty responses", href: "/docs/changelog/v0.1.10", category: "Changelog", keywords: ["0.1.10", "empty", "retry", "resilient", "0-byte", "fix"] },
   { title: "v0.1.9", description: "Cost estimates, cancel mid-run, /exclude command, native Anthropic", href: "/docs/changelog/v0.1.9", category: "Changelog", keywords: ["0.1.9", "cost", "estimate", "cancel", "exclude", "anthropic"] },
   { title: "v0.1.4", description: "Sync, Clean & Global Config", href: "/docs/changelog/v0.1.4", category: "Changelog", keywords: ["0.1.4", "sync", "clean", "global config"] },

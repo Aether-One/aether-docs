@@ -1,0 +1,54 @@
+import Authors from "@/components/docs/Authors";
+
+# /cleancode
+
+<Authors authors={[{ github: "viniciushgiovanini" }]} />
+
+```bash
+/cleancode review              # scan the whole project
+/cleancode review <path>       # scan a specific file or folder
+/cleancode review --yes        # skip the cost confirmation
+/cleancode ignore              # list ignored patterns
+/cleancode ignore <pattern>    # add an ignore glob
+/cleancode paradigm            # show or set the review paradigm
+```
+
+Scans the project for clean-code violations and writes a report to `.aether/clean/report.md` — point your AI assistant at it to apply the fixes. Aether does not rewrite your code itself.
+
+## How it works
+
+Detection is hybrid, in two passes:
+
+1. **Local heuristics** scan every file for free — no API calls, no cost. They flag suspect files (long functions, deep nesting, magic numbers, and more).
+2. If an AI provider is configured, **one batched call** re-reviews only the files heuristics flagged, for a sharper pass. Clean files never touch the API.
+
+Before that AI pass runs, Aether shows a cost/token estimate and asks for confirmation — the same flow as `/genesis` and `/sync`. Pass `--yes` to skip it.
+
+## Paradigms
+
+`/cleancode` can review against different sets of principles:
+
+| Paradigm | Focus |
+|----------|-------|
+| `clean-code` (default) | Long functions, deep nesting, magic numbers, naming, duplication |
+| `solid` | Single responsibility, open/closed, dependency inversion, and the rest of SOLID |
+| `functional` | Immutability, pure functions, avoiding side effects |
+| `google-style` | Google's style guide conventions |
+
+```bash
+/cleancode paradigm solid
+```
+
+The chosen paradigm is stored per project in `.aether/settings/cleancode-paradigm.json`.
+
+## Ignoring paths
+
+```bash
+/cleancode ignore "**/*.gen.ts"
+```
+
+Ignore patterns are stored in `.aether/settings/cleancode-ignore.json` and are excluded from every future `/cleancode review`.
+
+## Output
+
+Each run overwrites `.aether/clean/report.md` with the paradigm used, detection mode, and every issue found grouped by file — including a suggested fix for each one.
