@@ -1,0 +1,43 @@
+import Authors from "@/components/docs/Authors";
+
+# /prompt
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+```bash
+/prompt <what you want to do>    # no quotes needed
+```
+
+Turn a plain-language task into an **optimized, file-referencing prompt** you can paste into another AI (Claude, Kiro, Cursor…) — so it completes the task with far less context and fewer tokens.
+
+Instead of making the other AI read and explore your whole project, `/prompt` uses your `.aether/docs` knowledge base to write a briefing that already points at the exact files, conventions, and acceptance criteria.
+
+## How it works
+
+1. Reads a selective slice of your knowledge base — the docs index, `AI_CONTEXT.md`, and `folder-structure.md` — plus a live directory tree of the project
+2. Sends your task to the AI, which returns a concise prompt that references real file paths and the conventions that apply
+3. Saves it to `.aether/prompts/<name>.md` — **never overwriting** an existing prompt; a name collision becomes `<name>-2.md`, `<name>-3.md`, and so on
+4. The generated file opens with a reminder to review the file paths and scope before you use it
+
+## Staleness check
+
+Before generating, `/prompt` compares your code against the last `/genesis` snapshot (`.aether/settings/context.json`). If the code has changed since your docs were generated, it warns you — showing how many files were added, modified, or removed — and asks whether to continue anyway.
+
+For the most accurate prompt, run [`/sync`](/docs/cli-reference/sync) first so the docs match your current code.
+
+## Example
+
+```bash
+/prompt add rate-limit handling to the openrouter provider
+```
+
+Writes something like `.aether/prompts/add-rate-limit-handling.md`, a ready-to-paste prompt that names the files to edit (e.g. `src/providers/openrouter.ts`), the retry conventions to follow, and clear "done when…" criteria — then you drop it into your AI of choice.
+
+## Requirements
+
+- Run [`/genesis`](/docs/cli-reference/genesis) first — `/prompt` needs a `.aether/docs` knowledge base to work from
+- A configured provider ([`/config`](/docs/cli-reference/config))
+
+## Cancel anytime
+
+Press `ESC` during generation to cancel — nothing is written.

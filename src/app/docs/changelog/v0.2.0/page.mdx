@@ -1,0 +1,22 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.2.0 — Prompts That Travel
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+> 🗓️ July 2026
+
+Your `.aether/docs` are already a compressed map of your project. This release puts them to work for the AI you use *outside* Aether: the new `/prompt` command turns a plain task into a precise, file-referencing prompt you can paste into Claude, Kiro, Cursor, or anything else — so it goes straight to the right files instead of re-exploring your whole codebase, at a fraction of the tokens.
+
+### ✨ Features
+
+- **New `/prompt` command.** Type `/prompt add a --json flag to the export command` (no quotes needed) and Aether writes an optimized prompt to `.aether/prompts/`. It references the exact files to touch, the conventions that apply, and clear acceptance criteria — all drawn from your knowledge base
+- **Never overwrites a prompt.** Every run writes a new file with a meaningful name; a name collision becomes `<name>-2.md`, `<name>-3.md`, and so on — your past prompts are always kept
+- **Staleness gate.** Before generating, `/prompt` diffs your code against the last `/genesis` snapshot. If the docs are out of date it tells you what changed, recommends `/sync`, and asks whether to continue anyway. The generated file also carries a review-before-you-use reminder
+
+### 🏗️ Under the hood
+
+- **Reuses the sync machinery** — the freshness check runs on the same fingerprint diff (`loadSnapshot` + `diffFingerprint`) that powers `/sync`, so a single project scan feeds both the staleness check and the live directory tree handed to the optimizer
+- **Selective, low-token context** — only the docs index, `AI_CONTEXT.md`, and `folder-structure.md` are sent (bounded), keeping the call cheap; the point is fewer tokens, not shipping the whole knowledge base
+- **Resilient output parsing** — the model names the output file via a `SLUG:` line; if it's missing, Aether derives a slug from your request and still keeps the full prompt, so a generated prompt is never lost
+- **Cancel with `ESC`** — the single optimizer call is abortable mid-run, consistent with `/genesis` and `/sync`
