@@ -1,0 +1,30 @@
+import Authors from "@/components/docs/Authors";
+
+# /sync
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+```bash
+/sync              # sync the current directory
+/sync <path>       # sync a specific directory
+```
+
+Refresh docs after the project changed — without regenerating everything.
+
+## How it works
+
+1. Diffs the project against the last `/genesis` snapshot (stored in `.aether/settings/context.json`)
+2. Asks the AI which docs are affected by what changed
+3. Refreshes only those docs in place — existing sections are patched, nothing is deleted
+4. Adds new docs if the changes warrant them (e.g. you added an API layer that didn't exist before)
+
+If no snapshot exists yet, `/sync` will point you to `/genesis` first.
+
+## Concurrent generation
+
+Both `/genesis` and `/sync` generate multiple docs in parallel. The default concurrency is 4; override with:
+
+| Variable | Default | Controls |
+|----------|---------|----------|
+| `AETHER_GEN_CONCURRENCY` | `4` | How many docs are generated simultaneously |
+| `AETHER_DISTILL_CONCURRENCY` | `4` | How many files are distilled concurrently (large projects) |

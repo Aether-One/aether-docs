@@ -60,14 +60,18 @@ export default function QuickStart() {
                 {/* Connection & scanning */}
                 <div className="pl-3 space-y-0.5">
                   <div className="text-[#c8c8e0]">
-                    Connecting to <span className="text-[#8888a8]">openrouter</span> (tencent/hy3:free)...{" "}
+                    Connecting to <span className="font-semibold text-[#e8e8f0]">openrouter</span> · nvidia/nemotron-3-ultra-550b-a55b:free...{" "}
                     <span className="text-[#22c55e]">✓</span>
                   </div>
                   <div className="text-[#c8c8e0]">
                     Scanning project...{" "}
                     <span className="text-[#22c55e]">✓</span>
                   </div>
-                  <div className="text-[#c8c8e0]">Planning documentation...</div>
+                  <div className="text-[#c8c8e0]">
+                    Planning documentation...{" "}
+                    <span className="text-[#22c55e]">✓</span>{" "}
+                    <span className="text-[#8888a8]">(11 docs)</span>
+                  </div>
                 </div>
 
                 {/* Planner decided */}
@@ -76,44 +80,77 @@ export default function QuickStart() {
                     <span className="text-[#8b5cf6]">◇</span> Planner decided:
                   </div>
                   <div className="pl-5 text-[#8888a8] space-y-0">
+                    <div>• guides/getting-started.md</div>
+                    <div>• guides/onboarding.md</div>
                     <div>• architecture/system-overview.md</div>
                     <div>• architecture/folder-structure.md</div>
                     <div>• architecture/tech-stack.md</div>
                     <div>• AI_CONTEXT.md</div>
                     <div>• modules/overview.md</div>
-                    <div>• docs/docs/theme-system.md <span className="text-[#6b6b8a]">(custom)</span></div>
-                    <div>• docs/docs/3d-galaxy-background.md <span className="text-[#6b6b8a]">(custom)</span></div>
+                    <div>• diagrams/system.md</div>
+                    <div>• infrastructure/environment-configuration.md <span className="text-[#6b6b8a]">(custom)</span></div>
+                    <div>• infrastructure/s3-bucket-design.md <span className="text-[#6b6b8a]">(custom)</span></div>
+                    <div>• infrastructure/cloudfront-distribution.md <span className="text-[#6b6b8a]">(custom)</span></div>
                   </div>
                 </div>
 
-                {/* Doc count */}
+                {/* Exclude tip */}
                 <div className="pl-3">
-                  <span className="text-[#22c55e]">✓</span>{" "}
-                  <span className="text-[#c8c8e0]">(7 docs)</span>
+                  <div className="text-[#eab308]">
+                    <span>💡</span>{" "}
+                    <span>Large paths that don&apos;t need documenting? Exclude them with{" "}</span>
+                    <span className="font-semibold text-[#e8e8f0]">/exclude &lt;path&gt;</span>
+                  </div>
+                  <div className="text-[#eab308] pl-5">to shrink the scan and lower the cost.</div>
+                </div>
+
+                {/* Cost estimate */}
+                <div className="pl-3 space-y-0.5">
+                  <div className="text-[#c8c8e0]">
+                    <span className="font-semibold text-[#e8e8f0]">Cost estimate</span>{" "}
+                    <span className="text-[#8888a8]">— openrouter · nvidia/nemotron-3-ultra-550b-a55b:free</span>
+                  </div>
+                  <div className="pl-5 text-[#8888a8] space-y-0">
+                    <div>Calls{" "}<span className="pl-2">~11</span> <span className="text-[#6b6b8a]">(11 docs)</span></div>
+                    <div>Input{" "}<span className="pl-2">~21,956 tokens</span> <span className="text-[#6b6b8a]">(measured)</span></div>
+                    <div>Output <span className="pl-1">~22,000–35,750 tokens</span> <span className="text-[#6b6b8a]">(estimated)</span></div>
+                    <div>Cost{" "}<span className="pl-3 font-semibold text-[#e8e8f0]">Free</span> <span className="text-[#6b6b8a]">($0.00)</span></div>
+                  </div>
+                </div>
+
+                {/* Confirmation */}
+                <div className="pl-3 space-y-0.5">
+                  <div className="text-[#c8c8e0]">
+                    Proceed? <span className="text-[#8888a8]">[Y/n]</span> <span className="text-[#e8e8f0]">y</span>
+                  </div>
+                  <div className="text-[#8888a8]">
+                    Press <span className="font-semibold text-[#e8e8f0]">ESC</span> to cancel.
+                  </div>
+                  <div className="text-[#c8c8e0]">
+                    Preparing project context...{" "}
+                    <span className="text-[#22c55e]">✓</span>
+                  </div>
                 </div>
 
                 {/* Generating docs */}
-                <div className="pl-3 space-y-0.5">
+                <div className="pl-3 space-y-0.5 pt-1">
                   <div>
                     <span className="text-[#8b5cf6]">⚡</span>{" "}
                     <span className="text-[#c8c8e0]">generating docs</span>
                   </div>
-                  <div className="pl-5 text-[#8888a8] space-y-0">
+                  <div className="pl-3 text-[#8888a8] space-y-0">
+                    <div><span className="text-[#22c55e]">✓</span> guides/getting-started.md</div>
+                    <div><span className="text-[#a78bfa]">⏳</span> <span className="font-semibold text-[#e8e8f0]">guides/onboarding.md</span></div>
                     <div><span className="text-[#22c55e]">✓</span> architecture/system-overview.md</div>
                     <div><span className="text-[#22c55e]">✓</span> architecture/folder-structure.md</div>
                     <div><span className="text-[#22c55e]">✓</span> architecture/tech-stack.md</div>
                     <div><span className="text-[#22c55e]">✓</span> modules/overview.md</div>
-                    <div><span className="text-[#22c55e]">✓</span> AI_CONTEXT.md</div>
-                    <div><span className="text-[#22c55e]">✓</span> docs/docs/theme-system.md</div>
-                    <div><span className="text-[#22c55e]">✓</span> docs/docs/3d-galaxy-background.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> diagrams/system.md</div>
+                    <div><span className="text-[#a78bfa]">⏳</span> <span className="font-semibold text-[#e8e8f0]">AI_CONTEXT.md</span></div>
+                    <div><span className="text-[#a78bfa]">⏳</span> <span className="font-semibold text-[#e8e8f0]">infrastructure/environment-configuration.md</span></div>
+                    <div><span className="text-[#22c55e]">✓</span> infrastructure/s3-bucket-design.md</div>
+                    <div><span className="text-[#22c55e]">✓</span> infrastructure/cloudfront-distribution.md</div>
                   </div>
-                </div>
-
-                {/* Genesis complete */}
-                <div className="pt-1">
-                  <span className="text-[#22c55e]">✓</span>{" "}
-                  <span className="text-[#22c55e] font-semibold">Genesis complete in 170.1s</span>{" "}
-                  <span className="text-[#8888a8]">→ .aether/docs/</span>
                 </div>
 
                 {/* Cursor */}

@@ -1,0 +1,36 @@
+import Authors from "@/components/docs/Authors";
+
+# /exclude
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+Manage which paths are excluded from Aether's scans. Excluded paths never reach the AI — not the file contents, the directory tree, or the change-detection fingerprint. Use this to keep large or irrelevant folders (generated code, vendored deps, legacy modules) out of the context, shrinking costs.
+
+## Usage
+
+```bash
+/exclude              # list what's currently excluded
+/exclude <path>       # exclude a file or folder
+/exclude @            # interactive path picker (type to filter, ↑↓ to move, ⏎ to select)
+/exclude remove <path>    # re-include a path
+/exclude remove @         # interactive picker for re-including
+```
+
+## Storage
+
+Exclusions are stored in `.aether/settings/exclude.json` in the project. Commit it to share exclusions with your team.
+
+## When to use
+
+- Large generated directories (build output, `dist/`, `.next/`)
+- Vendored dependencies (`vendor/`, `third_party/`)
+- Legacy code you don't want documented
+- Test fixtures or sample data that bloat context
+
+## Effect on cost
+
+Excluded paths reduce the number of files scanned, which directly reduces:
+
+- Input tokens sent to the model
+- Cost estimates shown by `/genesis` and `/sync`
+- Generation time

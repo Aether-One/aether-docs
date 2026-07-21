@@ -1,0 +1,23 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.2 — Docs for Humans, Too
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+> 🗓️ July 2026
+
+Until now, `/genesis` produced docs tuned for AI assistants — accurate and traceable, but they read like a file index. This release adds a parallel set of **human-facing guides**, generated with their own writing contract.
+
+### ✨ Features
+
+- **Human guides** — every project now also gets a `guides/` section written for people, not machines:
+  - `guides/getting-started.md` — install, configure, run, verify *(always generated)*
+  - `guides/onboarding.md` — the mental model, **why** the project exists, and how to make your first change *(always generated)*
+  - `guides/contributing.md` — conventions, quality gates, and how to submit a change *(only when there's a real contribution process to document)*
+- **Docs index** — a `docs/README.md` landing page is now generated, grouping every doc by section (Guides, Architecture, Reference, AI Context) with links, so the knowledge base reads as a structured site instead of loose files
+- The planner now knows about the guides and decides when `contributing` is warranted
+
+### 🏗️ Under the hood
+
+- The human guides use a **different prompt contract** than the AI docs. Both keep the same anti-hallucination floor — never invent a technology, file, or command, and never present a roadmap item as already built but the guides invert the writing rules: explain and connect instead of cataloguing, and lead with the *why*. When your repo already has author-written context (a `README`, `CONTEXT.md`, `CONTRIBUTING.md`), the guides lean on it for intent instead of distrusting it, but there's nothing new you need to write; without those files, the guides are still generated from the code
+- The docs index is built deterministically (no LLM call), so it never drifts from the docs actually generated

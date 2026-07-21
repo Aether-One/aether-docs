@@ -8,129 +8,17 @@ All notable updates to Aether are documented here. Each release includes new fea
 
 ---
 
-## v0.1.4 — Sync, Clean & Global Config
+## Releases
 
-> 🗓️ July 2026
-
-The big one: `/sync` is live, config moved to a global directory, and a new `/clean` command gives you full control over stored data.
-
-### ✨ Features
-
-- **`/sync` — incremental doc updates.** After a `/genesis` baseline exists, `/sync` diffs the project against the last snapshot, asks the AI which docs are affected, and patches only those — existing sections are updated in place, nothing is deleted, and new docs are added when the changes warrant them. No more `/genesis --force` after every code change
-- **`/clean` — manage global data.** Lists all configured projects with their provider, model, and cache size. Subcommands to clear caches (all or per-project), remove config, or nuke everything:
-  - `/clean` — show status
-  - `/clean cache` / `/clean cache <n>` — clear caches
-  - `/clean <n>` — remove a project entirely
-  - `/clean config` — delete API keys
-  - `/clean all` — remove `~/.aether/` completely
-- **Global config directory (`~/.aether/`)** — API keys and provider config now live in your home directory, never in the repo. One machine, many projects, each can use a different provider/model without touching version control. The first `/config` also sets a shared default that new projects inherit automatically
-- **Per-project cache** — distill cache (condensed source notes for large projects) lives in `~/.aether/cache/<project>/`, not in the repo
-- **Concurrent doc generation** — both `/genesis` and `/sync` now generate multiple docs in parallel (default: 4, configurable via `AETHER_GEN_CONCURRENCY`)
-- **Shared project context** — instead of building context per-doc, Aether now builds ONE complete context shared across all docs. If the project fits the budget, it's real code; if not, it's distilled once (not per-doc), so the expensive pass runs a single time
-
-### 🏗️ Under the hood
-
-- Snapshot moved from `.aether/context.json` to `.aether/settings/context.json` — keeps the project root clean (backwards-compatible: old location still found)
-- Project identity uses a stable hash (`<folder>-<sha1-of-path>`) so same-named projects in different paths never collide
-- Section-level patching: when `/sync` updates an existing doc, it rewrites only the affected sections instead of regenerating the whole file
-- File fingerprinting with content hashes for precise change detection
-- Git log integration: `/sync` includes recent commit messages in the AI's context so it understands *why* things changed, not just *what*
-- Retry with exponential backoff on provider errors (429, 5xx, timeouts)
-- Smart rate-limit handling: 429 errors now get up to 6 retries with 15s+ backoff (respects provider's suggested `retry-after` delay), so free-tier limits are survived automatically instead of failing
-
-### 🐛 Fixes
-
-- Config `provider` field no longer drifts when `baseUrl` is changed to a recognized host
-- Large projects that exceeded the context budget no longer lose files silently — they're distilled into factual notes instead
-
----
-
-## v0.1.3 — Let the Whole Project In
-
-> 🗓️ July 2026
-
-`/genesis` was still leaving real projects behind. The scanner's budget was sized for a small model, so a mid-size codebase would blow past it and dozens of files got listed as *omitted* — the docs came out great, but built on a partial picture. This release opens the budget up to fit modern large-context models and puts the limits in your hands.
-
-### 🐛 Fixes
-
-- **Context scanner no longer omits files from real projects.** The scan budget was too conservative (300KB total, 32KB per file), so a project of any real size would trip *"project context budget exceeded"* and drop files from the AI's view. Defaults are now sized for modern large-context models (Gemini 1M–2M, Claude up to 1M tokens): **2MB total** and **128KB per file**, with the file walk raised to **10,000 files** and tree depth to **12**. A typical project now goes in whole
-- Omitted files are still reported explicitly, never dropped in silence — but with the wider budget, that list should stay empty for most projects
-
-### ✨ Features
-
-- **Configurable scan budget** — every limit is now overridable via environment variable, so you can open it up further for a huge repo or tighten it for a small local model:
-  - `AETHER_MAX_TOTAL_CHARS` — total character budget *(default 2,000,000)*
-  - `AETHER_MAX_FILE_SIZE` — per-file size cap in bytes *(default 128,000)*
-  - `AETHER_MAX_FILES_WALKED` — max files the walker visits *(default 10,000)*
-  - `AETHER_MAX_WALK_DEPTH` — max directory depth *(default 12)*
-
----
-
-## v0.1.2 — Docs for Humans, Too
-
-> 🗓️ July 2026
-
-Until now, `/genesis` produced docs tuned for AI assistants — accurate and traceable, but they read like a file index. This release adds a parallel set of **human-facing guides**, generated with their own writing contract.
-
-### ✨ Features
-
-- **Human guides** — every project now also gets a `guides/` section written for people, not machines:
-  - `guides/getting-started.md` — install, configure, run, verify *(always generated)*
-  - `guides/onboarding.md` — the mental model, **why** the project exists, and how to make your first change *(always generated)*
-  - `guides/contributing.md` — conventions, quality gates, and how to submit a change *(only when there's a real contribution process to document)*
-- **Docs index** — a `docs/README.md` landing page is now generated, grouping every doc by section (Guides, Architecture, Reference, AI Context) with links, so the knowledge base reads as a structured site instead of loose files
-- The planner now knows about the guides and decides when `contributing` is warranted
-
-### 🏗️ Under the hood
-
-- The human guides use a **different prompt contract** than the AI docs. Both keep the same anti-hallucination floor — never invent a technology, file, or command, and never present a roadmap item as already built but the guides invert the writing rules: explain and connect instead of cataloguing, and lead with the *why*. When your repo already has author-written context (a `README`, `CONTEXT.md`, `CONTRIBUTING.md`), the guides lean on it for intent instead of distrusting it, but there's nothing new you need to write; without those files, the guides are still generated from the code
-- The docs index is built deterministically (no LLM call), so it never drifts from the docs actually generated
-
----
-
-## v0.1.1 — Genesis First Steps
-
-> 🗓️ July 2026
-
-### ✨ Features
-
-- `/config` — Configure your AI provider (OpenAI, Anthropic, Gemini, or **OpenRouter** as a new first-class provider with `openrouter/auto` as its default model)
-- `/genesis` — Full implementation: scans the entire project (no arbitrary file-count cap), plans which docs make sense for *this specific project*, and can propose custom docs beyond the fixed catalog
-- `/genesis --force` — Regenerate even if `.aether/docs/` already exists
-- `/genesis` now detects existing docs and points you to `/sync` instead of silently redoing all of them
-- `/sync` — Registered as a command (shows up in `/help`), still under development
-
-### 🐛 Fixes
-
-- Context scanner no longer silently drops files — it used to cap at 10 source files and 8KB each, which excluded core files from the AI's context entirely. Now it includes the whole project within a much larger budget, and explicitly lists anything it had to omit
-- `provider` config field used to drift from reality (e.g. staying "gemini" after pointing `baseUrl` at OpenRouter). It's now auto-synced whenever `baseUrl` changes to a recognized host
-- The planner used to default to *including* conditional docs (`api`, `business`, `diagrams`, etc.) when unsure. It now defaults to *omitting* them — a frontend or devops project won't get `api/endpoints.md` just because it's in the catalog
-
----
-
-## v0.1.0 — Initial Release
-
-> 🗓️ July 2026
-
-### ✨ Features
-
-- Interactive terminal session with command autocomplete
-- Command system with dropdown autocomplete
-- Startup animation with ASCII art
-- `/help` — List all available commands
-- `/clear` — Clear the terminal screen
-- `/exit` — Exit Aether gracefully
-- Tab completion for commands and suggestions
-
-### 🚧 In Progress
-
-- `/ask` — Ask questions about your code with full context
-
-### 🏗️ Infrastructure
-
-- Standalone binary distribution (no runtime required)
-- Supports Windows (x64), macOS (x64), and Linux (x64)
-- Provider agnostic — supports OpenAI, Anthropic, Gemini
+| Version | Title | Date | Summary |
+|---------|-------|------|---------|
+| [v0.1.10](/docs/changelog/v0.1.10) | Never Leave a Doc Behind | July 2026 | Resilient generation — retries empty responses, never writes 0-byte docs |
+| [v0.1.9](/docs/changelog/v0.1.9) | Know the Cost, Cancel Anytime & Exclude the Noise | July 2026 | Cost estimates, ESC to cancel, `/exclude` command, and native Anthropic provider |
+| [v0.1.4](/docs/changelog/v0.1.4) | Sync, Clean & Global Config | July 2026 | `/sync` for incremental updates, `/clean` command, global config directory |
+| [v0.1.3](/docs/changelog/v0.1.3) | Let the Whole Project In | July 2026 | Expanded context budget for modern large-context models, configurable scan limits |
+| [v0.1.2](/docs/changelog/v0.1.2) | Docs for Humans, Too | July 2026 | Human-facing guides alongside AI docs, docs index page |
+| [v0.1.1](/docs/changelog/v0.1.1) | Genesis First Steps | July 2026 | Full `/genesis` implementation, OpenRouter provider, `/config` command |
+| [v0.1.0](/docs/changelog/v0.1.0) | Initial Release | July 2026 | Interactive CLI, command system, standalone binary distribution |
 
 ---
 
@@ -141,7 +29,6 @@ Upcoming features planned for future releases:
 | Feature | Status |
 |---------|--------|
 | `/ask` — Context-aware Q&A | Planned |
-| Dedicated Anthropic provider (own API format, not OpenAI-compatible) | Planned |
 | MCP Server — Expose knowledge to Claude, Cursor, Gemini | Planned |
 | VS Code Extension | Exploring |
 | Plugin system | Exploring |

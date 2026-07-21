@@ -1,0 +1,21 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.1 — Genesis First Steps
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+> 🗓️ July 2026
+
+### ✨ Features
+
+- `/config` — Configure your AI provider (OpenAI, Anthropic, Gemini, or **OpenRouter** as a new first-class provider with `openrouter/auto` as its default model)
+- `/genesis` — Full implementation: scans the entire project (no arbitrary file-count cap), plans which docs make sense for *this specific project*, and can propose custom docs beyond the fixed catalog
+- `/genesis --force` — Regenerate even if `.aether/docs/` already exists
+- `/genesis` now detects existing docs and points you to `/sync` instead of silently redoing all of them
+- `/sync` — Registered as a command (shows up in `/help`), still under development
+
+### 🐛 Fixes
+
+- Context scanner no longer silently drops files — it used to cap at 10 source files and 8KB each, which excluded core files from the AI's context entirely. Now it includes the whole project within a much larger budget, and explicitly lists anything it had to omit
+- `provider` config field used to drift from reality (e.g. staying "gemini" after pointing `baseUrl` at OpenRouter). It's now auto-synced whenever `baseUrl` changes to a recognized host
+- The planner used to default to *including* conditional docs (`api`, `business`, `diagrams`, etc.) when unsure. It now defaults to *omitting* them — a frontend or devops project won't get `api/endpoints.md` just because it's in the catalog

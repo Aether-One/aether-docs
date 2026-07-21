@@ -1,0 +1,30 @@
+import Authors from "@/components/docs/Authors";
+
+# /clean
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+```bash
+/clean              # list all projects and global status
+/clean cache        # remove all cached data (keep configs)
+/clean cache <n>    # remove cache for project #n from the list
+/clean <n>          # remove project #n entirely (config + cache)
+/clean config       # delete ~/.aether/config.json (API keys)
+/clean all          # delete everything in ~/.aether/
+```
+
+Manage global data stored in `~/.aether/`. Use `/clean` with no arguments to see what's stored — all configured projects, their cache sizes, and provider info.
+
+## What lives in `~/.aether/`
+
+| Path | Contents |
+|------|----------|
+| `config.json` | API keys, provider/model per project + shared default |
+| `cache/<project>/` | Distill cache (condensed source notes for large projects) |
+
+## Project storage in the repo
+
+| Path | Contents |
+|------|----------|
+| `.aether/docs/` | Generated knowledge base (safe to commit) |
+| `.aether/settings/context.json` | Snapshot for `/sync` — **do not delete** or sync loses its baseline |

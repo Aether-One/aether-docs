@@ -1,0 +1,35 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.9 — Know the Cost, Cancel Anytime & Exclude the Noise
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+> 🗓️ July 2026
+
+This release puts you in control of both spend and scope. Every `/genesis` and `/sync` now shows an up-front **cost estimate** you confirm before anything runs, you can **cancel mid-run** with a keypress, and the new **`/exclude`** keeps large, irrelevant paths out of the scan entirely. Anthropic also graduates to its own native provider.
+
+### ✨ Features
+
+- **Cost estimate + confirmation gate.** Before generating, `/genesis` and `/sync` show a breakdown — number of model calls, input tokens (measured from the real prompts), an estimated output range, and a projected cost range — then ask to proceed. It appears even on free models (where it reads `Free · $0.00`), so you always know what a run costs before it starts. Skip the prompt with `--yes` / `-y` for automation
+- **Live, universal pricing.** Prices come from OpenRouter's public model catalog — which also lists OpenAI, Anthropic, and Google models — so cost estimates work even when you call those providers directly. `:free` models are recognized as zero-cost; unknown models fall back gracefully to a small built-in table (or just show token counts)
+- **Cancel with `ESC`.** Press `ESC` (or `q`) during a run to stop it — genesis and sync both abort the in-flight model calls immediately, even while waiting out a rate-limit backoff. Docs already written are kept
+- **`/exclude` — keep big paths out of the scan.** Point Aether away from folders that don't need documenting (generated code, vendored deps, legacy modules) to shrink the context and lower cost. **Excluded paths never reach the AI** — not the file contents, the directory tree, or the change-detection fingerprint
+  - `/exclude <path>` — exclude a file or folder
+  - `/exclude @` — inline path picker: type to filter, ↑↓ to move, ⏎ to fill in the path
+  - `/exclude remove @` — pick from what's already excluded to re-include it
+  - `/exclude` — list what's excluded
+  - Stored in `.aether/settings/exclude.json` — commit it to share the list with your team
+- **Native Anthropic provider.** Anthropic now uses its real Messages API (`/v1/messages`, `x-api-key`, streaming token usage) instead of being routed through the OpenAI-compatible client. Extended thinking stays off by default
+
+### 🏗️ Under the hood
+
+- **Dedicated OpenRouter provider** — split out from the generic OpenAI-compatible client
+- **Reasoning turned off for docs.** Reasoning tokens are billed even though Aether strips the `<think>` block before saving — pure waste for doc generation. Aether now disables reasoning per provider (OpenRouter's unified `reasoning` flag; `reasoning_effort: low` on OpenAI's reasoning models): cheaper and faster, with no change to the docs
+- **Real token usage in the stream** — requests now ask providers to include usage in the final chunk, so estimates can be checked against actuals
+- **Estimates use real sizes** — `/sync` measures each doc being refreshed from disk (the patch prompt re-sends it), so the input/output estimate tracks reality instead of a flat guess
+
+### 🐛 Fixes (0.1.5 – 0.1.8)
+
+- Clearer connection errors — a failed provider check now says whether it **timed out**, was **rejected** (bad key), or **couldn't connect**, instead of one generic "service down" message
+- Install script and version-reporting fixes
+- Interactive prompt polish

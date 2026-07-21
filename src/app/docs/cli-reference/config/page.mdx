@@ -1,0 +1,37 @@
+import Authors from "@/components/docs/Authors";
+
+# /config
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+Configure the AI provider used by `/genesis`. Config is stored globally in `~/.aether/config.json` — never in the repo, so your API key stays out of version control.
+
+Each project keeps its own provider/model in that file, with a shared default the rest inherit — so one machine can drive many projects. Prefer not to store the key at all? Set `AETHER_API_KEY` in your environment and it overrides whatever's in the config file — handy for CI or shared machines.
+
+```bash
+/config                     # show current config
+/config gemini              # quick setup — free tier
+/config openai
+/config anthropic
+/config openrouter          # one key, access to many models (incl. free ones)
+/config set <key> <value>   # set a specific field
+```
+
+`set` keys: `provider`, `model`, `url` (or `baseurl`), `key` (or `apikey`).
+
+```bash
+/config set model gpt-4o
+/config set key AIza...
+/config set url https://openrouter.ai/api/v1
+```
+
+If you point `url` at a recognized host (OpenRouter, OpenAI, Anthropic, Gemini), `provider` is automatically re-synced to match — so the label never drifts from what you're actually calling.
+
+## Supported Providers
+
+| Provider | Default model | Notes |
+|----------|---------------|-------|
+| `gemini` | `gemini-2.0-flash` | Free tier: 15 RPM, 1M tokens/day |
+| `openai` | `gpt-4o` | Paid — ~$0.01/10k tokens |
+| `anthropic` | `claude-sonnet-4-20250514` | Paid — ~$0.003/1k tokens |
+| `openrouter` | `openrouter/auto` | Proxy for many models with one key — override the model freely |

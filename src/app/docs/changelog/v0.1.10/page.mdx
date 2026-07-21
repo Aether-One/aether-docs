@@ -1,0 +1,21 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.10 — Never Leave a Doc Behind
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+> 🗓️ July 2026
+
+Free and overloaded models sometimes return empty responses without signaling an error. Previously, Aether trusted the ✓ and wrote 0-byte files — the genesis said "complete" but half the docs were hollow. This release makes generation **resilient**: every doc the planner decides on **must** be generated, or the run fails visibly.
+
+### 🐛 Fixes
+
+- **Empty responses no longer produce 0-byte docs.** When a model returns empty content, Aether now retries up to 5 times with escalating backoff (10s, 20s, 30s, 40s) before declaring the step failed. A doc file is **never written unless it has content** — no more phantom docs that look generated but are empty
+- **Failed steps no longer kill the rest of the run.** The generation pool now continues generating other docs even if one step fails. Only user cancellation (ESC) stops everything. At the end, failed docs are clearly marked with ✗ so you know exactly what to retry
+- **Cancel (ESC) is now instant during backoff waits.** Previously, pressing ESC while Aether waited between retries would block until the sleep finished. The sleep now responds to the abort signal immediately
+
+### 🏗️ Under the hood
+
+- **Resilient worker pool** — `runPooled` no longer uses fail-fast (`Promise.all` + rethrow on first error). Workers now catch errors per-step, mark them ✗, and keep processing. Abort errors still halt all workers immediately — only generation failures are tolerated
+- **`abortableSleep`** — a new utility that sleeps for N ms but resolves instantly when the abort signal fires, so ESC always responds within one event-loop tick even during a 40s backoff wait
+- **Empty-content retry loop** — wraps each doc generation call: checks `response.content.trim()`, and if empty, waits and retries with a visible spinner update (`empty response — retry 2/4`). After exhausting retries, throws a clear error naming the doc that failed

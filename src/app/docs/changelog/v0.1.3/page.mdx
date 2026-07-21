@@ -1,0 +1,22 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.1.3 — Let the Whole Project In
+
+<Authors authors={[{ github: "fariazinhu" }]} />
+
+> 🗓️ July 2026
+
+`/genesis` was still leaving real projects behind. The scanner's budget was sized for a small model, so a mid-size codebase would blow past it and dozens of files got listed as *omitted* — the docs came out great, but built on a partial picture. This release opens the budget up to fit modern large-context models and puts the limits in your hands.
+
+### 🐛 Fixes
+
+- **Context scanner no longer omits files from real projects.** The scan budget was too conservative (300KB total, 32KB per file), so a project of any real size would trip *"project context budget exceeded"* and drop files from the AI's view. Defaults are now sized for modern large-context models (Gemini 1M–2M, Claude up to 1M tokens): **2MB total** and **128KB per file**, with the file walk raised to **10,000 files** and tree depth to **12**. A typical project now goes in whole
+- Omitted files are still reported explicitly, never dropped in silence — but with the wider budget, that list should stay empty for most projects
+
+### ✨ Features
+
+- **Configurable scan budget** — every limit is now overridable via environment variable, so you can open it up further for a huge repo or tighten it for a small local model:
+  - `AETHER_MAX_TOTAL_CHARS` — total character budget *(default 2,000,000)*
+  - `AETHER_MAX_FILE_SIZE` — per-file size cap in bytes *(default 128,000)*
+  - `AETHER_MAX_FILES_WALKED` — max files the walker visits *(default 10,000)*
+  - `AETHER_MAX_WALK_DEPTH` — max directory depth *(default 12)*
