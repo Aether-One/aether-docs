@@ -12,6 +12,8 @@ Turn a plain-language task into an **optimized, file-referencing prompt** you ca
 
 Instead of making the other AI read and explore your whole project, `/prompt` uses your `.aether/docs` knowledge base to write a briefing that already points at the exact files, conventions, and acceptance criteria.
 
+> **Does it actually save tokens?** We ran 5 real, already-merged bugs from axios through Claude Code twice — once raw, once with `/prompt` — and measured everything. [See the full benchmark →](/benchmarks)
+
 ## How it works
 
 1. Reads a selective slice of your knowledge base — the docs index, `AI_CONTEXT.md`, and `folder-structure.md` — plus a live directory tree of the project
