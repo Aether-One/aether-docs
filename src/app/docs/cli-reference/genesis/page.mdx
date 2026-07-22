@@ -21,6 +21,8 @@ Each doc is generated from a **single shared project context** built once before
 
 If `.aether/docs/` already exists, `/genesis` won't regenerate it by default — it'll point you to `/sync` instead. Use `--force` to fully regenerate anyway.
 
+When generation finishes, genesis offers to build [`docs.html`](/docs/cli-reference/html) — a free, browsable single-file viewer of the docs (sidebar, search, rendered diagrams). It's generated locally from the Markdown, so saying yes costs nothing.
+
 ## Tuning the scan budget
 
 The defaults fit most projects into a large-context model without omitting anything. You can open them up further for a very large repo, or tighten them for a small local model, via environment variables:

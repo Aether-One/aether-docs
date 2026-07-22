@@ -1,0 +1,29 @@
+import Authors from "@/components/docs/Authors";
+
+# v0.3.0 — Docs You Can Browse
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+> 🗓️ July 2026
+
+Your knowledge base gets a face. The new `/html` command turns `.aether/docs/` into a single, beautiful `docs.html` — sidebar navigation, full-text search, clickable cross-doc links, and rendered diagrams — that anyone can open in a browser. No server, no setup, **no tokens**: it's built locally from the Markdown you already have. This release also fixes a serious `/sync` bug that was silently corrupting code blocks inside your docs.
+
+### ✨ Features
+
+- **New `/html` command.** Builds `.aether/docs.html` — a self-contained viewer for your entire knowledge base. Generated deterministically from the Markdown on disk: zero AI calls, zero cost, always safe to regenerate
+- **Sidebar + full-text search.** Docs grouped by section (Guides, Architecture, Reference, …), with accent-insensitive search across every page — match counts, snippets, in-page term highlighting, and a `/` keyboard shortcut
+- **Cross-doc links that just work.** Links between your `.md` files become in-page navigation, heading anchors included; external links open in a new tab
+- **Mermaid diagrams, rendered.** Diagrams load Mermaid from a CDN on demand and render as real visuals. Offline (or CDN blocked), they fall back to their source with a notice — everything else works without internet
+- **Light/dark theme** with a manual toggle, following your system preference by default
+- **Wired into the flow.** `/genesis` offers to build the viewer when it finishes (auto-yes with `--yes`), and `/sync` refreshes `docs.html` automatically whenever it exists — the viewer never drifts from the Markdown
+
+### 🐛 Fixes
+
+- **`/sync` no longer corrupts code blocks in your docs.** The JSON parser used for section patches stripped *all* markdown fence markers from the model's response — including ones inside the doc content being patched — so every synced doc lost its ` ``` ` fences, collapsing code examples and directory trees into plain paragraphs. Fences are now only unwrapped at the response edges; the content inside is preserved byte-for-byte
+- **The HTML viewer repairs already-damaged docs.** Docs corrupted by the old bug (and unfenced output from weaker models) render correctly anyway: stripped fences are recovered as code blocks, box-drawing directory trees display as trees, and table cells with `|` inside inline code no longer break apart
+
+### 🏗️ Under the hood
+
+- **New `src/html/` module** — a dependency-free Markdown → HTML renderer, viewer template (CSS + client JS), and builder, keeping the viewer fully deterministic
+- **Project name in the snapshot** — `.aether/settings/context.json` now records the project's name from the scan, so the viewer header always shows *your* project
+- **Single-file architecture** — pages are pre-rendered at build time and embedded as a JSON island; the only external request the viewer ever makes is the optional Mermaid CDN load
