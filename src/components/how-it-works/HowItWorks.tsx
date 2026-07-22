@@ -6,8 +6,9 @@ const steps = [
   {
     number: "1",
     title: "Install",
-    code: "curl -Lo aether https://github.com/Aether-One/aether/releases/latest/download/aether-linux-x64",
-    description: "Download the standalone binary for your platform",
+    code: "curl -fsSL https://raw.githubusercontent.com/aether-one/aether/main/scripts/install.sh | sh
+",
+    description: "Download the standalone binary for your platform (this command above is for Linux/MacOS)",
   },
   {
     number: "2",
