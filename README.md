@@ -1,6 +1,6 @@
 # Aether Docs
 
-[Official documentation](https://aether-docs-sigma.vercel.app/) site and landing page for [Aether](https://github.com/aether-one/aether) — the open-source CLI that transforms any codebase into an AI-native workspace.
+[Official documentation](https://aethercli.com/) site and landing page for [Aether](https://github.com/aether-one/aether) — the open-source CLI that transforms any codebase into an AI-native workspace.
 
 ## Stack
 
