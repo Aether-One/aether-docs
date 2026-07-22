@@ -6,8 +6,7 @@ const steps = [
   {
     number: "1",
     title: "Install",
-    code: "curl -fsSL https://raw.githubusercontent.com/aether-one/aether/main/scripts/install.sh | sh
-",
+    code: "curl -fsSL https://raw.githubusercontent.com/aether-one/aether/main/scripts/install.sh | sh",
     description: "Download the standalone binary for your platform (this command above is for Linux/MacOS)",
   },
   {
