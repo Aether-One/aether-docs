@@ -27,6 +27,12 @@ const navigation = [
     ],
   },
   {
+    title: "Proof",
+    links: [
+      { title: "Benchmark: /prompt vs. raw", href: "/benchmarks" },
+    ],
+  },
+  {
     title: "Changelog",
     links: [
       { title: "All Releases", href: "/docs/changelog" },
