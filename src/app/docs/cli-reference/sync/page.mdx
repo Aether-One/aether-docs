@@ -17,6 +17,7 @@ Refresh docs after the project changed — without regenerating everything.
 2. Asks the AI which docs are affected by what changed
 3. Refreshes only those docs in place — existing sections are patched, nothing is deleted
 4. Adds new docs if the changes warrant them (e.g. you added an API layer that didn't exist before)
+5. If [`docs.html`](/docs/cli-reference/html) exists, it's rebuilt automatically from the refreshed Markdown — the HTML viewer never drifts from the docs
 
 If no snapshot exists yet, `/sync` will point you to `/genesis` first.
 

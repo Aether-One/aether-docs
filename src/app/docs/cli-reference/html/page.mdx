@@ -1,0 +1,44 @@
+import Authors from "@/components/docs/Authors";
+
+# /html
+
+<Authors authors={[{ github: "fariazinhu", name: "Bruno Faria" }]} />
+
+```bash
+/html              # build .aether/docs.html for the current directory
+/html <path>       # build for a specific directory
+```
+
+Build a **single-file HTML viewer** for your generated docs — open `.aether/docs.html` in any browser and navigate the whole knowledge base with a sidebar, full-text search, and clickable links between documents.
+
+It's **completely free**: the viewer is generated locally from the Markdown already in `.aether/docs/` — no AI calls, no tokens, and always safe to regenerate.
+
+## What you get
+
+- **Sidebar navigation** grouped by section (Guides, Architecture, Reference, AI Context, Project-specific)
+- **Full-text search** across every page — accent-insensitive, with match counts, snippets, and in-page highlighting. Press `/` to jump to the search box
+- **Cross-doc links** — links between your `.md` docs become in-page navigation, including heading anchors
+- **Mermaid diagrams rendered** — flowcharts and diagrams from `diagrams/system.md` render as real visuals
+- **Light/dark theme** — follows your system preference, with a manual toggle
+- **One file, zero setup** — email it, commit it, drop it in a chat; it works anywhere a browser opens it
+
+## Diagrams: online and offline
+
+Diagram rendering loads Mermaid from a CDN on demand, keeping `docs.html` small. When there's no internet (or the CDN is blocked), diagrams gracefully fall back to their source with a short notice — the rest of the viewer works fully offline.
+
+## Generated when you want it
+
+You rarely need to run `/html` by hand:
+
+- After [`/genesis`](/docs/cli-reference/genesis) finishes, Aether offers to build the viewer (auto-yes with `--yes`)
+- [`/sync`](/docs/cli-reference/sync) refreshes `docs.html` automatically whenever it exists — your viewer never drifts from the Markdown
+- `/html` rebuilds it anytime, e.g. if you skipped the offer at genesis
+
+## Built for non-technical readers
+
+The Markdown knowledge base is great for developers and AI assistants — but a PM, designer, or stakeholder shouldn't need a Markdown viewer and a file tree to read the docs. `docs.html` gives them a familiar, searchable docs site in one click.
+
+## Requirements
+
+- Run [`/genesis`](/docs/cli-reference/genesis) first — `/html` builds the viewer from the docs in `.aether/docs/`
+- No provider or API key needed — this command never calls an AI
