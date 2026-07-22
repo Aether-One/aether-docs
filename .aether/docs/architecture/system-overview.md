@@ -1,57 +1,91 @@
-# System Overview
+# System Overview: aether-docs
 
 ## Goal
+This project is the official documentation site and landing page for **Aether** — an open-source CLI that transforms any codebase into an AI-native workspace. It serves as a static documentation portal with interactive components, built with Next.js 16 (App Router) and deployed to GitHub Pages.
 
-`aether-docs` is the official documentation site and landing page for Aether, the open-source CLI that transforms any codebase into an AI-native workspace. It is built as a Next.js 16 application with static export (`next.config.ts` sets `output: "export"`) and renders docs via MDX.
+---
 
 ## Architecture
+**Frontend-only static site** — no backend, database, or authentication system detected.
 
-This is a client-side static site with no backend, database, or server runtime in the provided context.
+| Layer | Technology | Evidence |
+|-------|------------|----------|
+| Framework | Next.js 16 (App Router, Static Export) | `package.json`, `next.config.ts`, `README.md` |
+| Language | TypeScript | `tsconfig.json`, all `.tsx`/`.ts` files |
+| Styling | Tailwind CSS 4 | `package.json`, `postcss.config.mjs` |
+| Animations | Framer Motion 12 | `package.json`, multiple components |
+| 3D Graphics | React Three Fiber + Drei + Three.js | `package.json`, `src/components/galaxy/Galaxy.tsx` |
+| Content | MDX with remark-gfm | `package.json`, `src/app/docs/**/*.mdx`, `mdx-components.tsx` |
+| Deployment | GitHub Pages via GitHub Actions | `README.md` (references `.github/workflows/deploy.yml`) |
 
-- **Frontend**: Next.js 16 App Router application (`package.json` dependency `next: "16.2.10"`, `src/app/layout.tsx`, `src/app/page.tsx`). Pages are statically exported (`next.config.ts` → `output: "export"`).
-- **Styling**: Tailwind CSS 4 (`postcss.config.mjs`, `package.json` devDependency `tailwindcss: "^4"`, `@tailwindcss/postcss: "^4"`).
-- **3D / Animation**: React Three Fiber (`@react-three/fiber`), `@react-three/drei`, `three` for the galaxy background (`src/components/galaxy/Galaxy.tsx`); Framer Motion (`framer-motion`) for UI animation (`src/components/features/Features.tsx`, `Hero.tsx`, etc.).
-- **Docs**: MDX pages with `remark-gfm` (`next.config.ts` → `withMDX` + `remarkPlugins: [["remark-gfm"]]`; `mdx-components.tsx` customizes MDX rendering).
-- **Theme**: Client-side dark/light theme via React Context (`src/components/theme/ThemeProvider.tsx`, `ThemeToggle.tsx`), persisted to `localStorage` under key `aether-theme`.
+**No backend, database, storage, or communication layer detected.**
+
+---
 
 ## System Components
 
-| Component | File(s) | Role |
-|-----------|---------|------|
-| Root Layout | `src/app/layout.tsx` | Sets HTML lang, Geist fonts, metadata, wraps app in `ThemeProvider`. |
-| Landing Page | `src/app/page.tsx` | Composes `Navbar`, `Hero`, `Features`, `HowItWorks`, `QuickStart`, `Roadmap`, `Footer`. |
-| Docs Layout | `src/app/docs/layout.tsx` | Wraps docs pages with `DocsHeader`, `DocsSidebar`, `Footer`. |
-| Navbar | `src/components/navbar/Navbar.tsx` | Fixed nav with logo, anchor links, theme toggle, GitHub link. |
-| Hero | `src/components/hero/Hero.tsx` | Landing hero with 3D `Galaxy`, headline, CTAs, terminal mock. |
-| Galaxy | `src/components/galaxy/Galaxy.tsx` | React Three Fiber canvas with 4 point-cloud layers (`StarField`, `SpiralNebula`, `GalacticCore`, `BlueStreaks`). |
-| Features | `src/components/features/Features.tsx` | Grid of feature cards with Framer Motion. |
-| HowItWorks | `src/components/how-it-works/HowItWorks.tsx` | Step list (Install/Run/Chat) with terminal-style code. |
-| QuickStart | `src/components/quickstart/QuickStart.tsx` | Mock `/genesis` terminal output. |
-| Roadmap | `src/components/roadmap/Roadmap.tsx` | Timeline phases (Now/Next/Later). |
-| Footer | `src/components/footer/Footer.tsx` | Brand, doc links, GitHub, MIT license line. |
-| DocsHeader | `src/components/docs/DocsHeader.tsx` | Sticky docs header with logo, theme toggle, GitHub. |
-| DocsSidebar | `src/components/docs/DocsSidebar.tsx` | Nav links to `/docs`, `/docs/getting-started`, `/docs/cli-reference`, `/docs/changelog`, `/docs/contributing` using `usePathname`. |
-| Authors | `src/components/docs/Authors.tsx` | Renders author byline from `authors` prop (GitHub avatar + link). |
-| PlatformInstall | `src/components/docs/PlatformInstall.tsx` | Per-OS (Windows/macOS/Linux) install script cards with copy button. |
-| ThemeProvider / ThemeToggle | `src/components/theme/ThemeProvider.tsx`, `ThemeToggle.tsx`, `index.ts` | Context-based theme state + toggle UI. |
-| UI primitives | `src/components/ui/Button.tsx`, `Card.tsx`, `Badge.tsx`, `Logo.tsx`, `index.ts` | Reusable `Button`, `Card`(+`CardHeader`/`CardTitle`/`CardDescription`), `Badge`, `Logo` (theme-aware img). |
-| MDX components | `mdx-components.tsx` | Maps `h1`–`hr` MDX elements to styled JSX using CSS vars. |
-| Docs MDX pages | `src/app/docs/page.mdx`, `getting-started/page.mdx`, `cli-reference/page.mdx`, `changelog/page.mdx`, `contributing/page.mdx` | Documentation content (files exist; content not provided). |
+### Landing Page (`src/app/page.tsx`)
+- Entry point rendering hero, features, how-it-works, quickstart, roadmap, benchmarks sections
+- Composes: `Hero`, `Features`, `HowItWorks`, `QuickStart`, `Roadmap`, `Benchmarks` (via `src/app/benchmarks/page.tsx`)
+
+### Documentation Section (`src/app/docs/`)
+- **Layout**: `src/app/docs/layout.tsx` — provides `DocsSidebar` and `DocsHeader`
+- **Pages**: MDX files under:
+  - `getting-started/page.mdx`
+  - `cli-reference/` (9 command pages: `config`, `genesis`, `sync`, `prompt`, `ask`, `clean`, `exclude`, `cleancode`, index)
+  - `changelog/` (12 version pages: v0.1.0–v0.2.1)
+  - `contributing/page.mdx`
+  - `page.mdx` (docs index)
+
+### Core UI Components (`src/components/`)
+| Component | Role |
+|-----------|------|
+| `Hero` | Landing hero with 3D galaxy background, animated headline, CTAs, terminal demo |
+| `Galaxy` | Three.js particle system (star field, spiral nebula, core, blue streaks) — theme-aware |
+| `Features` | Animated grid of 7 feature cards with hover effects |
+| `HowItWorks` | 3-step install/run/chat process with code snippets |
+| `QuickStart` | Static terminal simulation of `aether genesis` output |
+| `Roadmap` | 3-phase timeline (Now/Next/Later) with active indicator |
+| `Navbar` | Responsive navigation with theme toggle, mobile menu, scroll-aware styling |
+| `Footer` | Links to docs sections, GitHub, copyright |
+| `DocsHeader` | Sticky docs header with logo, search trigger, theme toggle, GitHub link |
+| `DocsSidebar` | Collapsible navigation tree (Getting Started, CLI Reference, Changelog, etc.) |
+| `SearchDialog` | Cmd/Ctrl+K fuzzy search over 27 indexed items (titles, keywords, descriptions) |
+| `PlatformInstall` | Copy-to-clipboard install scripts for Windows/macOS/Linux |
+| `ThemeProvider` / `ThemeToggle` | Dark/light mode via localStorage + document class |
+| `Badge`, `Button`, `Card`, `Logo` | Reusable UI primitives with nebula-purple accent theme |
+
+### Benchmarks (`src/components/benchmarks/`)
+- `data.ts`: 5 benchmark tasks against `axios/axios` repo with token/turn/cost metrics for raw vs prompt modes
+- `scale.ts`: Logarithmic scale utilities (100K–10M) for chart axis
+- `format.ts`: Token/USD`, `BenchmarkChart`, `BenchmarkTable`, `BenchmarkStats`, `BenchmarkTasks`, `BenchmarkMethodology`, `BenchmarkCaveats`, `BenchmarkChangelog`, `BenchmarkCTA`, `BenchmarkHero` — render benchmark report
+
+### Search Index (`src/lib/search-data.ts`)
+- 27 `SearchItem` entries across 4 categories: Getting Started (2), CLI Reference (10), Changelog (12), Community (1)
+- Powers `SearchDialog` fuzzy matching
+
+---
 
 ## Communication Patterns
+**No inter-component communication layer detected.** All components are React client/server components communicating via:
+- Props and composition (standard React)
+- React Context (`ThemeContext` in `ThemeProvider.tsx`)
+- Next.js `Link` for client-side navigation
+- `next/navigation` hooks (`usePathname`, `useRouter`) for routing awareness
+- Browser APIs: `localStorage` (theme), `navigator.clipboard` (copy), `window` events (scroll, resize, keydown)
 
-- **Component composition**: Pages import and render components directly (e.g. `src/app/page.tsx` imports `Navbar`, `Hero`, etc.).
-- **React Context**: `ThemeProvider` supplies `theme`/`toggleTheme` via `ThemeContext`; consumed by `useTheme` in `Navbar`, `Logo`, `ThemeToggle`, `Hero`.
-- **Next.js routing / Link**: Client navigation via `next/link` (`Navbar`, `Footer`, `DocsSidebar`, `DocsHeader`). `DocsSidebar` uses `usePathname` from `next/navigation` to mark active link.
-- **Dynamic import**: `Hero.tsx` dynamically imports `Galaxy` with `ssr: false` (`next/dynamic`).
-- No REST, WebSocket, or event-bus communication is present in the provided context.
+**No REST, WebSocket, GraphQL, or event bus detected.**
 
-## Deployment
-
-- **Static export**: `next.config.ts` sets `output: "export"` and `images.unoptimized = true`; `package.json` scripts `build` (`next build`) and `start` (`next start`).
-- **README deployment note**: README.md states the site auto-deploys to GitHub Pages on push to `main` via GitHub Actions, and that static files are in the `out/` directory after `npm run build`. (The `.github/workflows/deploy.yml` referenced in README is NOT present in the provided directory structure.)
-- No other deployment configuration (Dockerfile, CI config files, hosting config) is present in the provided context.
+---
 
 ## Authentication & Authorization
+**Not detected.** No auth providers, middleware, session handling, or protected routes in the provided context.
 
-Not detected from provided context. No auth, login, session, or permission logic appears in any provided file.
+---
+
+## Deployment
+- **Target**: GitHub Pages (static export)
+- **Trigger**: Push to `main` branch via GitHub Actions (`.github/workflows/deploy.yml` referenced in `README.md`)
+- **Build command**: `npm run build` → outputs to `out/`
+- **Static export**: Implied by `README.md` ("Static Export") and GitHub Pages deployment
+- **No Docker, Vercel, Netlify, or other platform configs detected.**

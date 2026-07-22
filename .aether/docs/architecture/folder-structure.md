@@ -2,99 +2,153 @@
 
 ## Overview
 
-The project `aether-docs` is a Next.js 16 App Router documentation site and landing page. Source code lives under `src/`, split by route group (`app/`) and reusable UI/section components (`components/`). Documentation content is authored as MDX files under `src/app/docs/`. Static logo assets are stored in `public/`. Configuration for Next.js, TypeScript, ESLint, PostCSS, and MDX is at the repository root.
+This is a **Next.js (App Router) + React + TypeScript** project for the Aether CLI documentation and marketing site. The codebase follows a **feature-based organization** under `src/components/` grouped by UI domain (hero, navbar, galaxy, docs, benchmarks, quickstart, etc.), with shared UI primitives in `src/components/ui/`, theme logic in `src/components/theme/`, and shared data/utilities in `src/lib/`. The app uses **Next.js App Router** (`app/` directory) for routing, **React Server Components** by default with `'use client'` directives for interactive components, **Tailwind CSS** for styling, **Framer Motion** for animations, and **React Three Fiber / Drei** for the 3D galaxy background.
+
+---
 
 ## Root Structure
 
 ```
-aether-docs/
-├── public/                  ← Static assets: logo PNGs (aether_logo.png, aether_logo_no_bg.png, aether_logo_no_bg_dark.png, topbar_logo_dark.png, topbar_logo_light.png) and favicon.ico
-├── src/                     ← All application source code (see Source Structure)
-├── eslint.config.mjs        ← ESLint configuration (eslint ^9, eslint-config-next)
-├── mdx-components.tsx       ← MDX component overrides (useMDXComponents) for h1, h2, p, code, table, etc.
-├── next-env.d.ts            ← Next.js generated TypeScript reference file
-├── next.config.ts           ← Next.js config: output "export", unoptimized images, MDX pageExtensions, remark-gfm
-├── package-lock.json        ← Lockfile for dependencies
-├── package.json             ← Project metadata, scripts (dev/build/start/lint), dependencies
-├── postcss.config.mjs       ← PostCSS config using @tailwindcss/postcss
-├── README.md                ← Project readme (stack, structure, deploy notes)
-├── tsconfig.json            ← TypeScript config (paths "@/*": "./src/*", strict, jsx react-jsx)
-└── tsconfig.tsbuildinfo     ← TypeScript incremental build info
+.
+├── app/                    # Next.js App Router (routing, layouts, pages)
+├── public/                 # Static assets (logos, logos, binaries referenced in install scripts)
+├── src/                    # Application source code
+│   ├── components/         # React components (feature-based + shared UI)
+│   ├── lib/                # Shared data, utilities, types
+│   └── ...                 # (other src/ directories not shown in context)
+├── package.json            # Dependencies & scripts (inferred)
+├── tsconfig.json           # TypeScript config (inferred)
+├── tailwind.config.ts      # Tailwind config (inferred)
+├── next.config.js          # Next.js config (inferred)
+└── tsconfig.json           # TypeScript config (inferred)
 ```
 
-## Source Structure
+> **Note**: Only directories and files explicitly referenced in the provided context are listed above. Configuration files (`package.json`, `tsconfig.json`, `tailwind.config.ts`, `next.config.js`) are inferred as standard for a Next.js/TS/Tailwind project but not explicitly shown in context.
+
+---
+
+## Source Structure (`src/`)
 
 ```
 src/
-├── app/
+├── components/
+│   ├── benchmarks/
+│   │   └── format.ts                    # Token/USD/percentage formatters for benchmarks
 │   ├── docs/
-│   │   ├── changelog/
-│   │   │   └── page.mdx              ← Changelog documentation page
-│   │   ├── cli-reference/
-│   │   │   └── page.mdx              ← CLI reference documentation page
-│   │   ├── contributing/
-│   │   │   └── page.mdx              ← Contributing documentation page
-│   │   ├── getting-started/
-│   │   │   └── page.mdx              ← Getting started documentation page
-│   │   ├── layout.tsx                ← Docs layout: DocsHeader, DocsSidebar, Footer, article container
-│   │   └── page.mdx                  ← Docs introduction page ("/docs")
-│   ├── favicon.ico                   ← App favicon
-│   ├── globals.css                   ← Global stylesheet
-│   ├── layout.tsx                    ← Root layout: Geist/Geist_Mono fonts, ThemeProvider, metadata
-│   └── page.tsx                      ← Landing page: Navbar, Hero, Features, HowItWorks, QuickStart, Roadmap, Footer
-└── components/
-    ├── docs/
-    │   ├── Authors.tsx               ← Author byline component (props: authors[])
-    │   ├── DocsHeader.tsx            ← Docs top header with Logo, ThemeToggle, GitHub link
-    │   ├── DocsSidebar.tsx           ← Docs navigation sidebar (usePathname, static nav array)
-    │   └── PlatformInstall.tsx       ← Platform-specific install cards (Windows/macOS/Linux) with copy
-    ├── features/
-    │   └── Features.tsx              ← Landing section: feature grid with framer-motion
-    ├── footer/
-    │   └── Footer.tsx                ← Site footer with links and License line
-    ├── galaxy/
-    │   └── Galaxy.tsx                ← React Three Fiber Canvas with 4 point layers (StarField, SpiralNebula, GalacticCore, BlueStreaks)
-    ├── hero/
-    │   └── Hero.tsx                  ← Landing hero: dynamic Galaxy import, scroll transforms, terminal mock
-    ├── how-it-works/
-    │   └── HowItWorks.tsx            ← Landing section: install/run/chat steps
-    ├── navbar/
-    │   └── Navbar.tsx                ← Fixed navbar with scroll state, ThemeToggle, GitHub, Get Started
-    ├── quickstart/
-    │   └── QuickStart.tsx            ← Landing section: /genesis terminal output mock
-    ├── roadmap/
-    │   └── Roadmap.tsx               ← Landing section: Now/Next/Later phases
-    ├── theme/
-    │   ├── index.ts                  ← Exports ThemeProvider, useTheme, ThemeToggle
-    │   ├── ThemeProvider.tsx         ← Context provider for dark/light, localStorage "aether-theme"
-    │   └── ThemeToggle.tsx           ← Button toggling theme with sun/moon icons
-    └── ui/
-        ├── Badge.tsx                 ← Badge component with variant styles
-        ├── Button.tsx                ← Button/Link component with variant/size
-        ├── Card.tsx                  ← Card, CardHeader, CardTitle, CardDescription
-        ├── index.ts                  ← Exports Button, Card(+subcomponents), Badge
-        └── Logo.tsx                  ← Theme-aware logo img (aether_logo_no_bg variants)
+│   │   ├── DocsSidebar.tsx              # Collapsible docs sidebar with navigation tree
+│   │   ├── PlatformInstall.tsx          # Platform-specific install cards (Win/macOS/Linux)
+│   │   └── SearchDialog.tsx             # Cmd+K search dialog with fuzzy search
+│   ├── galaxy/
+│   │   └── Galaxy.tsx                   # 3D galaxy background (React Three Fiber + Drei)
+│   ├── galaxy/                          # (duplicate entry in context — same as above)
+│   ├── hero/
+│   │   └── Hero.tsx                     # Hero section with galaxy bg, terminal demo, CTAs
+│   ├── hero/                            # (duplicate entry in context — same as above)
+│   ├── navbar/
+│   │   └── Navbar.tsx                   # Responsive navbar with theme toggle, mobile menu
+│   ├── navbar/                          # (duplicate entry in context — same as above)
+│   ├── quickstart/
+│   │   └── QuickStart.tsx               # Quickstart terminal demo section
+│   ├── quickstart/                      # (duplicate entry in context — same as above)
+│   ├── theme/
+│   │   ├── ThemeProvider.tsx            # Theme context provider (inferred from usage)
+│   │   ├── ThemeToggle.tsx              # Theme toggle button (used in Navbar, SearchDialog)
+│   │   └── useTheme.ts                  # useTheme hook (used in Hero, Logo, Galaxy)
+│   ├── ui/
+│   │   ├── Button.tsx                   # Polymorphic Button (button | a) with variants/sizes
+│   │   ├── Card.tsx                     # Card + CardHeader/Title/Description subcomponents
+│   │   └── Logo.tsx                     # Theme-aware logo (dark/light variants)
+│   └── ui/                              # (duplicate entry in context — same as above)
+├── lib/
+│   └── search-data.ts                   # Search index (27 items) + types + fuzzy search utils
+└── lib/                                 # (duplicate entry in context — same as above)
 ```
+
+> **Note**: Duplicate directory entries in the context (e.g., `galaxy/`, `hero/`, `navbar/`, `quickstart/`, `ui/`, `lib/` listed twice) are consolidated above. Only unique directories/files are shown.
+
+---
 
 ## Naming Conventions
 
-- Route segments under `src/app/` use lowercase with hyphens (e.g. `getting-started/`, `cli-reference/`).
-- Each route segment uses a `page.mdx` or `page.tsx` file for the route (per `next.config.ts` `pageExtensions: ["ts","tsx","md","mdx"]`).
-- Component folders group by domain: `docs/`, `features/`, `footer/`, `galaxy/`, `hero/`, `how-it-works/`, `navbar/`, `quickstart/`, `roadmap/`, `theme/`, `ui/`.
-- Component files use PascalCase for React components (e.g. `DocsSidebar.tsx`, `ThemeProvider.tsx`).
-- Barrel files `index.ts` exist in `src/components/theme/` and `src/components/ui/` to re-export components.
-- Static assets in `public/` use lowercase with underscores (e.g. `aether_logo_no_bg_dark.png`, `topbar_logo_light.png`).
+| Pattern | Example | Context |
+|--------|---------|---------|
+| **Component files** | `PascalCase.tsx` | `Hero.tsx`, `Navbar.tsx`, `Galaxy.tsx`, `Button.tsx` |
+| **Utility / data files** | `kebab-case.ts` | `format.ts`, `search-data.ts`, `useTheme.ts` |
+| **Component directories** | `kebab-case/` | `hero/`, `navbar/`, `galaxy/`, `docs/`, `benchmarks/` |
+| **Shared UI primitives** | `src/components/ui/` | `Button.tsx`, `Card.tsx`, `Logo.tsx` |
+| **Feature-based grouping** | `src/components/<feature>/` | `hero/`, `navbar/`, `galaxy/`, `docs/`, `benchmarks/`, `quickstart/` |
+| **Hooks** | `usePascalCase.ts` | `useTheme.ts` |
+| **Types** | `PascalCase` in `.ts` files | `SearchItem`, `SearchItemProps`, `PlatformCardProps` |
+| **Component exports** | `default export` (default) | All components use `export default function Name()` |
+| **Subcomponents** | Named exports | `CardHeader`, `CardTitle`, `CardDescription` in `Card.tsx` |
+
+---
 
 ## Key Files
 
-- `package.json` — Defines name `aether-docs`, scripts (`dev`, `build`, `start`, `lint`), and dependencies including `next@16.2.10`, `react@19.2.4`, `@next/mdx`, `@react-three/fiber`, `@react-three/drei`, `three`, `framer-motion`, `lucide-react`, `remark-gfm`.
-- `next.config.ts` — Configures `output: "export"` (static export), `images.unoptimized`, MDX via `createMDX` with `remark-gfm`, and `pageExtensions` including `mdx`.
-- `mdx-components.tsx` — Exports `useMDXComponents` mapping MDX elements (h1, h2, p, code, pre, a, table, etc.) to styled React components using CSS variables.
-- `tsconfig.json` — Sets `paths` `@/*` → `./src/*`, `jsx: react-jsx`, `strict: true`, `moduleResolution: bundler`.
-- `src/app/layout.tsx` — Root layout wrapping children in `ThemeProvider`, loading Geist fonts, setting metadata and `<html lang="en" className="dark">`.
-- `src/app/page.tsx` — Landing page composition importing Navbar, Hero, Features, HowItWorks, QuickStart, Roadmap, Footer.
-- `src/app/docs/layout.tsx` — Docs layout rendering DocsHeader, DocsSidebar, Footer, and `children` in an article main.
-- `src/components/theme/ThemeProvider.tsx` — Provides theme context, reads/writes `localStorage` key `aether-theme`, toggles `dark`/`light` class on `document.documentElement`.
-- `src/components/galaxy/Galaxy.tsx` — Default export `Galaxy` rendering a `<Canvas>` with four `Points` layers using `@react-three/fiber` and `@react-three/drei`.
-- `postcss.config.mjs` — PostCSS plugin config using `@tailwindcss/postcss` (tailwindcss ^4).
-- `eslint.config.mjs` — ESLint flat config (eslint ^9 with eslint-config-next).
+| File | Role | Key Details |
+|------|------|-------------|
+| `app/layout.tsx` | Root layout (inferred) | Wraps app with `ThemeProvider`, global styles, fonts (inferred from context usage) |
+| `app/page.tsx` | Home page (inferred) | Composes `Hero`, `QuickStart`, likely `Navbar` and `Galaxy` (inferred from component usage) |
+| `app/docs/**/*.tsx` | Docs pages (inferred) | Use `DocsSidebar`, `SearchDialog`, `PlatformInstall` (referenced in components) |
+| `src/components/hero/Hero.tsx` | Hero section | Galaxy background, animated terminal demo, CTAs, theme-aware |
+| `src/components/navbar/Navbar.tsx` | Main navigation | Responsive, theme toggle, mobile menu, scroll-aware styling |
+| `src/components/galaxy/Galaxy.tsx` | 3D galaxy background | React Three Fiber + Drei; 4 particle systems; theme-aware colors |
+| `src/components/docs/DocsSidebar.tsx` | Docs navigation | Collapsible sections, active route highlighting, keyboard accessible |
+| `src/components/docs/SearchDialog.tsx` | Cmd+K search | Fuzzy search, keyboard nav, grouped results, focus management |
+| `src/components/docs/PlatformInstall.tsx` | Install instructions | 3 platform cards with copy-to-clipboard install scripts |
+| `src/components/quickstart/QuickStart.tsx` | Quickstart demo | Static terminal simulation of `aether genesis` flow |
+| `src/components/benchmarks/format.ts` | Benchmark formatters | `formatTokens`, `formatUsd`, `formatPct` |
+| `src/components/ui/Button.tsx` | Button primitive | Polymorphic (`button` \| `a`), 3 variants, 3 sizes, nebula-purple theme |
+| `src/components/ui/Card.tsx` | Card primitive | Base + subcomponents (`CardHeader`, `CardTitle`, `CardDescription`) |
+| `src/components/ui/Logo.tsx` | Logo component | Theme-aware (dark/light PNG), `useTheme` hook |
+| `src/components/theme/useTheme.ts` | Theme hook | Provides `theme` (`'light' \| 'dark'`) and `toggleTheme` |
+| `src/components/theme/ThemeProvider.tsx` | Theme context | Wraps app, manages theme state, persists to localStorage/cookie (inferred) |
+| `src/components/theme/ThemeToggle.tsx` | Theme toggle button | Used in `Navbar`, `SearchDialog` |
+| `src/lib/search-data.ts` | Search index + utils | 27 `SearchItem`s, `fuzzyMatch`, `searchItems`, `groupByCategory` |
+| `public/aether_logo_no_bg_dark.png` | Dark logo | Used by `Logo` component in dark mode |
+| `public/aether_logo_no_bg.png` | Light logo | Used by `Logo` component in light mode |
+| `public/topbar_logo_dark.png` | Navbar dark logo | Used in `Navbar` |
+| `public/topbar_light.png` | Navbar light logo | Used in `Navbar` |
+| `public/aether-win-x64.exe` | Windows binary | Referenced in `PlatformInstall.tsx` install script |
+| `public/aether-macos-arm64` | macOS binary | Referenced in `PlatformInstall.tsx` install script |
+| `public/aether-linux-x64` | Linux binary | Referenced in `PlatformInstall.tsx` install script |
+
+---
+
+## App Router Structure (Inferred from Component Usage)
+
+```
+app/
+├── layout.tsx                 # Root layout → ThemeProvider, Navbar, global styles
+├── page.tsx                   # Home → Hero, QuickStart, (Galaxy background)
+├── docs/
+│   ├── layout.tsx             # Docs layout → DocsSidebar, SearchDialog
+│   ├── page.tsx               # /docs → redirect or index
+│   ├── getting-started/
+│   │   └── page.tsx
+│   ├── cli-reference/
+│   │   ├── page.tsx
+│   │   ├── config/page.tsx
+│   │   ├── genesis/page.tsx
+│   │   ├── sync/page.tsx
+│   │   ├── prompt/page.tsx
+│   │   ├── ask/page.tsx
+│   │   ├── clean/page.tsx
+│   │   ├── exclude/page.tsx
+│   │   └── cleancode/page.tsx
+│   ├── proof/
+│   │   └── page.tsx
+│   ├── changelog/
+│   │   ├── page.tsx
+│   │   ├── v0.2.1/page.tsx
+│   │   ├── v0.2.0/page.tsx
+│   │   └── ... (down to v0.1.0)
+│   └── community/
+│       └── page.tsx
+├── benchmarks/
+│   └── page.tsx               # Uses benchmarks/format.ts
+└── ...                        # Other routes inferred from DocsSidebar navigation
+```
+
+> **Note**: The `app/` directory structure is **inferred** from component usage (`DocsSidebar` navigation links, `Hero` CTAs linking to `/docs/getting-started`, `Navbar` linking to `/docs`, `PlatformInstall` used in docs, `SearchDialog` used in docs layout). Only `src/` files are explicitly provided in context.

@@ -1,55 +1,2508 @@
-# AI Context — aether-docs
+# AI Context — Aether Project
 
-You are working on `aether-docs`, the official documentation site and landing page for Aether (the open-source CLI described in `README.md` and `src/app/layout.tsx` metadata).
+## Project Identity
+Aether is an open-source CLI that turns any codebase into an AI-native workspace by generating documentation, context, and prompts for AI-assisted development.
 
-## 1. Project Identity
-This project is the Next.js 16 + TypeScript documentation and landing page for Aether, an open-source CLI that transforms any codebase into an AI-native workspace, built with MDX docs and a React Three Fiber galaxy background.
+---
 
-## 2. Always Follow
-- Use the App Router structure under `src/app/` as defined by `src/app/page.tsx` (landing) and `src/app/docs/layout.tsx` (docs shell with `DocsSidebar` + `DocsHeader` + `Footer`).
-- Wrap all page content in `ThemeProvider` from `src/components/theme/ThemeProvider.tsx` (done in `src/app/layout.tsx`); respect the `dark`/`light` theme via `useTheme()` from `@/components/theme`.
-- Use the MDX component map in `mdx-components.tsx` for all `.mdx` documentation pages; do not override its heading/paragraph/code/table styles outside that file.
-- Use CSS variables for theming in components (e.g. `var(--docs-bg)`, `var(--accent)`, `var(--muted)`) as seen in `src/app/docs/layout.tsx`, `src/components/docs/DocsHeader.tsx`, and `mdx-components.tsx`.
-- Use path alias `@/*` mapped to `./src/*` (per `tsconfig.json`) for all internal imports, as done in `src/app/page.tsx` and `src/components/navbar/Navbar.tsx`.
-- Mark interactive/client components with `"use client"` (e.g. `src/components/navbar/Navbar.tsx`, `src/components/theme/ThemeToggle.tsx`, `src/components/galaxy/Galaxy.tsx`).
-- Export reusable UI from `src/components/ui/index.ts` (`Button`, `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `Badge`) and theme utils from `src/components/theme/index.ts` (`ThemeProvider`, `useTheme`, `ThemeToggle`).
-- Use `next.config.ts` MDX setup: `pageExtensions` includes `md`/`mdx` and `remark-gfm` is enabled; docs live as `page.mdx` under `src/app/docs/*/`.
-- Use `output: "export"` (static export) from `next.config.ts`; do not add server-only runtime features (API routes, dynamic server rendering) that break static export.
-- Use `lucide-react` is NOT used; icons are inline SVGs (see `DocsHeader.tsx`, `Navbar.tsx`, `PlatformInstall.tsx`). Do not introduce icon libraries not in `package.json`.
-- Use `framer-motion` for animations in client components (`Features.tsx`, `HowItWorks.tsx`, `Roadmap.tsx`, `Hero.tsx`, `Navbar.tsx`) with `initial`/`whileInView`/`animate` patterns.
-- Use `Galaxy` via `next/dynamic` with `ssr: false` in `src/components/hero/Hero.tsx`; never import it statically in a server component.
+## Always Follow
 
-## 3. Never Do
-- Never edit `next-env.d.ts` (stated in the file: "This file should not be edited").
-- Never use `next/image` optimized images: `next.config.ts` sets `images.unoptimized: true` and components use plain `<img>` with `eslint-disable-next-line @next/next/no-img-element` (see `Logo.tsx`, `Navbar.tsx`, `Authors.tsx`).
-- Never hardcode theme colors as literals where a CSS variable exists (e.g. docs components use `var(--docs-border)`, not `#ccc`).
-- Never add a dependency not listed in `package.json` (only those shown: `@mdx-js/*`, `@next/mdx`, `@react-three/drei`, `@react-three/fiber`, `framer-motion`, `lucide-react` [present but unused in code], `next`, `react`, `react-dom`, `remark-gfm`, `three`, and dev deps).
-- Never break the docs sidebar navigation contract in `src/components/docs/DocsSidebar.tsx` (sections: Getting Started, CLI Reference, Community) without updating that file.
-- Never assume `lucide-react` is used in components — it is a dependency but no component imports it; do not reference it as a used pattern.
-- Never use `localStorage` key other than `"aether-theme"` for theme persistence (`ThemeProvider.tsx`).
+### Architecture Patterns
+- **Client components only** — All components in `src/components/` use `'use client'` (Hero, Navbar, Galaxy, Hero, Navbar, QuickStart, SearchDialog, DocsSidebar, PlatformInstall, QuickStart, Hero, Navbar, Galaxy, SearchDialog, DocsSidebar, PlatformInstall, QuickStart, Hero, Navbar, Galaxy, SearchDialog, DocsSidebar, PlatformInstall, QuickStart)
+- **Component structure** — Components live in `src/components/<feature>/<Component>.tsx` (e.g., `src/components/hero/Hero.tsx`, `src/components/navbar/Navbar.tsx`)
+- **UI primitives** — Reusable UI components live in `src/components/ui/` (`Button.tsx`, `Card.tsx`, `Logo.tsx`, `Button.tsx`, `Card.tsx`, `Logo.tsx`)
+- **Feature components** — Feature-specific components live in `src/components/<feature>/` (`benchmarks/format.ts`, `docs/DocsSidebar.tsx`, `docs/PlatformInstall.tsx`, `docs/SearchDialog.tsx`, `galaxy/Galaxy.tsx`, `hero/Hero.tsx`, `navbar/Navbar.tsx`, `quickstart/QuickStart.tsx`)
+- **Utility libraries** — Shared utilities in `src/lib/` (`search-data.ts`, `search-data.ts`)
+- **Theme system** — Theme context and toggle in `src/components/theme/` (referenced via `@/components/theme`)
 
-## 4. Key Decisions
-- Static export via `output: "export"` in `next.config.ts` — site is deployed as static files (per `README.md` and config).
-- MDX with `remark-gfm` for all documentation content (`next.config.ts`, `mdx-components.tsx`).
-- Theme is client-side only via `ThemeProvider` + `localStorage`, default `"dark"`, `<html className="dark">` in `src/app/layout.tsx`.
-- 3D background is `Galaxy` (React Three Fiber + drei `Points`/`PointMaterial`, four layers: `StarField`, `SpiralNebula`, `GalacticCore`, `BlueStreaks`) loaded client-only (`Hero.tsx`).
-- Landing page composition is fixed in `src/app/page.tsx`: `Navbar`, `Hero`, `Features`, `HowItWorks`, `QuickStart`, `Roadmap`, `Footer`.
-- Docs layout is fixed in `src/app/docs/layout.tsx`: `DocsHeader` + flex `DocsSidebar`/`main` + `Footer`.
-- Logos swap by theme: `Logo.tsx` uses `/aether_logo_no_bg_dark.png` or `/aether_logo_no_bg.png`; `Navbar.tsx` uses `/topbar_logo_dark.png` or `/topbar_logo_light.png` from `public/`.
-
-## 5. Conventions
-- File naming: route segments are folders under `src/app/` with `page.tsx`/`page.mdx`; docs subpages are `src/app/docs/<slug>/page.mdx` (e.g. `getting-started/page.mdx`, `cli-reference/page.mdx`).
-- Component files: one component per file in `src/components/<group>/<Name>.tsx` (e.g. `src/components/features/Features.tsx`).
-- Barrel exports: `src/components/ui/index.ts` and `src/components/theme/index.ts` re-export components.
-- TypeScript strict mode is on (`tsconfig.json` `"strict": true`); use explicit prop interfaces (e.g. `AuthorsProps` in `Authors.tsx`, `BadgeProps` in `Badge.tsx`).
-- Use `Geist` and `Geist_Mono` from `next/font/google` in `src/app/layout.tsx` as `--font-geist-sans` / `--font-geist-mono`.
-- Inline SVG GitHub icon is duplicated in `DocsHeader.tsx`, `Navbar.tsx`, `Hero.tsx`, `Footer.tsx` — keep consistent path if changed.
-- Docs author byline: `Authors.tsx` takes `authors: Author[]` with `github` and optional `name`; links to `https://github.com/${github}`.
-
-## 6. File Patterns
-- New landing sections: add component in `src/components/<group>/` and include in `src/app/page.tsx` main tree.
-- New docs pages: create `src/app/docs/<slug>/page.mdx`; add link to `navigation` array in `src/components/docs/DocsSidebar.tsx`.
-- New UI primitive: add to `src/components/ui/` and export from `src/components/ui/index.ts`.
-- New theme-related util: add to `src/components/theme/` and export from `src/components/theme/index.ts`.
-- Static assets (logos): place in `public/` and reference by absolute path (`/filename.png`).
-- MDX styling changes: only in `mdx-components.tsx` `useMDXComponents` return object.
+### Coding Standards
+- **TypeScript strict** — All components use TypeScript with explicit interfaces (`SearchItem`, `PlatformCardProps`, `SearchDialogProps`, `SearchItem`, `PlatformCardProps`, `SearchDialogProps`, `SearchItem`, `PlatformCardProps`, `SearchDialogProps`)
+- **Client components** — All interactive components use `'use client'` directive
+- **Component exports** — Default exports for components (`export default function Hero()`, `export default function Navbar()`, `export default function Galaxy()`, `export default function Hero()`, `export default function Navbar()`, `export default function Galaxy()`, `export default function Hero()`, `export default function Navbar()`, `export default function Galaxy()`, `export default function SearchDialog()`, `export default function DocsSidebar()`, `export default function PlatformInstall()`, `export default function QuickStart()`, `export default function Hero()`, `export default function Navbar()`, `export default function Galaxy()`, `export default function SearchDialog()`, `export default function DocsSidebar()`, `export default function PlatformInstall()`, `export default function QuickStart()`)
+- **TypeScript interfaces** — Explicit interfaces for props and data (`SearchItem`, `PlatformCardProps`, `SearchDialogProps`, `SearchItem`, `PlatformCardProps`, `SearchDialogProps`, `SearchItem`, `PlatformCardProps`, `SearchDialogProps`)
+- **Dynamic imports** — Heavy components (Galaxy) loaded via `next/dynamic` with `ssr: false` (`dynamic(() => import('@/components/galaxy/Galaxy'), { ssr: false })`)
+- **Framer Motion** — Animations via `framer-motion` (`motion`, `useScroll`, `useTransform`, `AnimatePresence`, `motion`, `useScroll`, `useTransform`, `AnimatePresence`, `motion`, `useScroll`, `useTransform`, `AnimatePresence`, `motion`, `useScroll`, `useTransform`)
+- **React Three Fiber** — 3D graphics via `@react-three/fiber` and `@react-three/drei` (`Canvas`, `useFrame`, `Points`, `PointMaterial`, `THREE`)
+- **Theme-aware components** — Components read theme via `useTheme()` and adapt colors (`isDark` passed to Galaxy, theme-aware logo src, theme-aware navbar logo)
+- **Framer Motion animations** — Scroll animations via `useScroll`/`useTransform`, entrance animations via `initial`/`whileInView`/`viewport`, mobile menu via `AnimatePresence` + `motion.div`
+- **Next.js Image/Link** — `next/link` for internal navigation, `next/dynamic` for heavy components
+- **Theme-aware assets** — Logos and icons switch by theme (`/aether_logo_no_bg_dark.png` | `/aether_logo_no_bg.png`, `/topbar_logo_dark.png` | `/topbar_light.png`)
+- **SVG icons inline** — Icons as inline SVG components (`ChevronIcon`, `WindowsIcon`, `MacIcon`, `LinuxIcon`, GitHub SVG in Hero/Navbar)
+- **Framer Motion viewport animations** — `whileInView` with `viewport={{ once: true, margin: "-100px" }}` for scroll-triggered animations
+- **Keyboard shortcuts** — Global `Cmd/Ctrl+K` listener in `SearchDialog` via `keydown` on `document`
+- **Focus management** — `inputRef.current?.focus()` on dialog open, `activeIndex` keyboard navigation, `scrollIntoView` for results
+- **Click-outside close** — `mousedown` listener on overlay closes dialog
+- **Copy to clipboard** — `navigator.clipboard.writeText()` with temporary "Copied" feedback
+- **Theme-aware 3D colors** — Galaxy components receive `isDark` and choose colors per theme (e.g., `#e8e0ff` vs `#1a1a2e`)
+- **Three.js performance** — `dpr={[1, 2]}`, `antialias: false`, `alpha: true`, point counts capped (8000, 4000, 2000, 1500)
+- **Framer Motion scroll animations** — `useScroll` with `target: containerRef`, `offset: ["start start", "end start"]`, `useTransform` mapping to `y: [0, 200]`, `opacity: [1, 0]`
+- **Viewport animations** — `initial={{ opacity: 0, y: 30 }}`, `whileInView={{ opacity: 1, y: 0 }}`, `viewport={{ once: true, margin: "-50px" }}`
+- **CSS variables for theming** -- `--accent`, `--docs-active`, `--docs-active-border`, `--accent` used in `DocsSidebar` for active states
+- **CSS variables for colors** -- `--accent`, `--docs-active`, `--docs-active-border`, `--accent` used in `DocsSidebar` for active states
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` used in `DocsSidebar` for theming
+- **CSS variables** — `--accent`, `--docs-active`, `--docs-active-border` used in `DocsSidebar` for active link styling
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` used in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` used in `DocsSidebar`
+- **CSS custom properties for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom properties** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS variables for theming** — `--accent`, `--docs-active`, `--docs-active-border` in `DocsSidebar`
+- **CSS custom

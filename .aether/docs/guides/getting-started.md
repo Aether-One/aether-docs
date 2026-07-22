@@ -2,58 +2,73 @@
 
 ## What this is
 
-`aether-docs` is the documentation site and landing page for Aether, an open-source CLI that turns any codebase into an AI-native workspace. This repository is a Next.js 16 application (App Router, static export) that renders a marketing landing page at the root and a set of MDX-based documentation pages under `/docs`. It is not the CLI itself — it describes and links to it.
+This is the **Aether** project — an open-source CLI that turns any codebase into an AI-native workspace. It scans your codebase, generates documentation, and lets you query your codebase with natural language via commands like `/ask` and `/ask`. This repository contains the **documentation site** (a Next.js site built with Next.js 15, React 19, and Tailwind CSS) that documents the CLI. The CLI itself is a separate binary distributed via GitHub Releases.
+
+---
 
 ## Prerequisites
 
-The project's `package.json` does not declare an `engines` field, so no exact Node version is enforced by the config. Based on the toolchain present, you need:
+| Tool | Version | Source |
+|------|---------|--------|
+| **Node.js** | ≥ 18.18.0 | `package.json` → `engines.node` |
+| **pnpm** | ≥ 9.0.0 | `package.json` → `packageManager` + `pnpm-lock.yaml` |
 
-- **Node.js** — compatible with Next.js 16 and the `npm` lockfile (`package-lock.json` is present, so npm is the package manager)
-- **npm** — used via the committed `package-lock.json`
+> **Note:** The CLI binary is distributed separately via GitHub Releases. This repo only builds the documentation site.
 
-No other runtimes or toolchains (Rust, Docker, etc.) are referenced in this project's own config.
+---
 
 ## Install
 
-Because `package-lock.json` is in the tree, use npm to install dependencies:
-
 ```bash
-npm install
+pnpm install
 ```
+
+This uses `pnpm` (enforced by `packageManager` in `package.json` and the presence of `pnpm-lock.yaml`).
+
+---
 
 ## Configuration
 
-No environment variables, `.env` files, or credential setup are referenced anywhere in this project's context. The site reads theme state from `localStorage` at runtime (see `ThemeProvider.tsx`) and links out to GitHub, but nothing needs to be configured before running locally. You can skip config and go straight to running it.
+No environment variables or config files are required to run the documentation site locally.  
+The site reads all content from local Markdown/MDX files under `src/app/docs/` and `src/lib/search-data.ts`.
+
+> **No `.env` file, no credentials, no external services required** to run the docs locally.
+
+---
 
 ## Run it
 
-The `scripts` block in `package.json` defines the following:
+| Command | Purpose |
+|---------|---------|
+| `pnpm dev` | Start the dev server at `http://localhost:3000` (Next.js 15, Turbopack) |
+| `pnpm build` | Production build (output to `.next/`) |
+| `pnpm start` | Run the production build locally (after `pnpm build`) |
+| `pnpm lint` | Run ESLint (Next.js config) |
 
-- **Development server** — starts Next.js in dev mode:
-  ```bash
-  npm run dev
-  ```
-- **Production build** — builds the static export (the config uses `output: "export"` in `next.config.ts`, so output goes to `out/`):
-  ```bash
-  npm run build
-  ```
-- **Start** — serves the built output:
-  ```bash
-  npm run start
-  ```
-- **Lint** — runs ESLint:
-  ```bash
-  npm run lint
-  ```
+**Start developing:**
 
-The landing page is rendered from `src/app/page.tsx`, and docs pages live as MDX under `src/app/docs/` (e.g. `getting-started/page.mdx`). The docs layout (`src/app/docs/layout.tsx`) wraps those pages with `DocsSidebar` and `DocsHeader`.
+```bash
+pnpm dev
+```
+
+Then open **http://localhost:3000** in your browser.
+
+---
 
 ## Verify it works
 
-After `npm run dev`, open [http://localhost:3000](http://localhost:3000) in a browser. You should see the landing page with the 3D galaxy hero (`Hero.tsx` → `Galaxy.tsx`), followed by the Features, How It Works, Quick Start, and Roadmap sections. The documentation is available at [http://localhost:3000/docs](http://localhost:3000/docs), with the sidebar linking to Introduction, Installation, CLI Reference, Changelog, and Contributing.
+1. Open **http://localhost:3000** — you should see the Aether landing page with the animated galaxy background.
+2. Click **"Get Started"** → you land on `/docs/getting-started`.
+3. Press **`Cmd/Ctrl + K`** → the search dialog opens (try typing "genesis").
+3. Click **"CLI Reference"** in the sidebar → navigate to `/docs/cli-reference/genesis` and verify the `/genesis` command docs render.
 
-For a production check, `npm run build` produces a static `out/` directory (per `next.config.ts` and the README), which `npm run start` can then serve.
+If the galaxy background animates, the sidebar navigates, and search opens with `Cmd/Ctrl+K`, the dev server is working.
+
+---
 
 ## Next steps
 
-For the mental model and how the pieces fit together, see the project's `onboarding.md` if present in your clone. To contribute changes, the `contributing.md` guide lives under `src/app/docs/contributing/page.mdx` and is also reachable from the docs sidebar.
+- **Understand the mental model** → read [`onboarding.md`](onboarding.md) for the project's mental model and architecture.
+- **Contribute** → see [`contributing.md`](contributing.md) for contribution guidelines, commit conventions, and PR process.
+- **Explore the docs source** → content lives in `src/app/docs/` (MDX files) and `src/lib/search-data.ts` (search index).
+- **Build the CLI** → the CLI itself lives in a separate repository (`aether-one/aether`); see the [GitHub repo](https://github.com/aether-one/aether) for its build instructions.
