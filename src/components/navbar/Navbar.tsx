@@ -38,9 +38,9 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   const navLinks = [
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How it works" },
-    { href: "#roadmap", label: "Roadmap" },
+    { href: "/#features", label: "Features" },
+    { href: "/#how-it-works", label: "How it works" },
+    { href: "/#roadmap", label: "Roadmap" },
     { href: "/docs", label: "Docs", isLink: true },
   ];
 
