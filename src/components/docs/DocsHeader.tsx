@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo";
-import { ThemeToggle } from "@/components/theme";
+import { ThemeToggle, useTheme } from "@/components/theme";
 import SearchDialog from "@/components/docs/SearchDialog";
 
 export default function DocsHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const { theme } = useTheme();
 
   return (
     <>
@@ -18,10 +18,12 @@ export default function DocsHeader() {
         <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Link href="/" className="flex items-center gap-2.5">
-              <Logo width={26} height={26} />
-              <span className="font-semibold text-sm tracking-tight" style={{ color: "var(--docs-heading)" }}>
-                Aether
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={theme === "dark" ? "/topbar_logo_dark.png" : "/topbar_logo_light.png"}
+                alt="Aether"
+                className="h-7 w-auto"
+              />
             </Link>
             <span style={{ color: "var(--docs-border)" }} className="mx-2">/</span>
             <span className="text-sm" style={{ color: "var(--muted)" }}>docs</span>
